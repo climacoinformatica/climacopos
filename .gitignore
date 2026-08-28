@@ -1,0 +1,16 @@
+/vendor
+/node_modules
+/storage/*.key
+/storage/app/conector/*.exe
+/storage/empresa*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/public/storage
+/public/img/iconos
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+*.bak

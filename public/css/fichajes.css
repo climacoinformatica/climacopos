@@ -1,0 +1,133 @@
+/* ============================================================
+   FICHAJES Y USUARIOS
+   ============================================================ */
+
+.fichaje-panel {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.fichaje-estado {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .84rem; font-weight: 600;
+    padding: .3rem .9rem; border-radius: 999px;
+    margin-bottom: 1rem;
+}
+.fichaje-estado__punto {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+}
+.fichaje-estado--trabajando { background: rgba(16,185,129,.15); color: #6ee7b7; }
+.fichaje-estado--pausa      { background: rgba(245,158,11,.15); color: #fcd34d; }
+.fichaje-estado--fuera      { background: var(--panel2); color: var(--suave); }
+
+.fichaje-reloj {
+    font-size: 3.2rem; font-weight: 700;
+    line-height: 1; margin-bottom: 1.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.fichaje-botones {
+    display: flex; gap: .75rem; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 1.25rem;
+}
+
+/* Botones grandes: se pulsan con prisa y a veces con las manos mojadas */
+.boton-fichar {
+    border: 0; border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1rem; font-weight: 600;
+    cursor: pointer;
+    min-width: 170px;
+}
+.boton-fichar--entrada { background: var(--ok); color: #04231a; }
+.boton-fichar--salida  { background: var(--error); color: #fff; }
+.boton-fichar--pausa   { background: var(--aviso); color: #422006; }
+.boton-fichar:hover { filter: brightness(1.1); }
+
+.fichaje-hoy { color: var(--suave); font-size: .88rem; }
+.fichaje-hoy strong { color: var(--texto); }
+
+/* ---------- Lista de fichajes ---------- */
+.fichajes-lista { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+
+.fichaje-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .5rem .7rem;
+    background: var(--panel2);
+    border-left: 3px solid var(--borde);
+    border-radius: 0 8px 8px 0;
+}
+.fichaje-item--entrada      { border-left-color: var(--ok); }
+.fichaje-item--salida       { border-left-color: var(--error); }
+.fichaje-item--pausa_inicio,
+.fichaje-item--pausa_fin    { border-left-color: var(--aviso); }
+
+.fichaje-item__hora {
+    font-weight: 700; font-variant-numeric: tabular-nums;
+    font-size: .95rem;
+}
+.fichaje-item__tipo { color: var(--suave); font-size: .84rem; flex: 1; }
+
+/* ---------- Semana ---------- */
+.semana-barras {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: .5rem; align-items: end;
+}
+.semana-dia { text-align: center; }
+.semana-dia__barra {
+    height: 100px;
+    display: flex; align-items: flex-end;
+    background: var(--panel2);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: .35rem;
+}
+.semana-dia__barra span {
+    width: 100%;
+    background: var(--marca);
+    border-radius: 6px 6px 0 0;
+    transition: height .3s;
+}
+.semana-dia__relleno--aviso { background: var(--aviso) !important; }
+.semana-dia small { display: block; font-size: .7rem; color: var(--suave); }
+.semana-dia__horas { font-variant-numeric: tabular-nums; }
+.semana-dia--hoy .semana-dia__barra { outline: 2px solid var(--marca); outline-offset: 1px; }
+
+/* ---------- Informe ---------- */
+.fichajes-linea { display: flex; gap: .3rem; flex-wrap: wrap; }
+
+.fichaje-pastilla {
+    font-size: .7rem; font-weight: 600;
+    padding: .12rem .45rem; border-radius: 5px;
+    font-variant-numeric: tabular-nums;
+    background: var(--panel2); color: var(--suave);
+}
+.fichaje-pastilla--entrada { background: rgba(16,185,129,.18); color: #6ee7b7; }
+.fichaje-pastilla--salida  { background: rgba(239,68,68,.16);  color: #fca5a5; }
+.fichaje-pastilla--pausa_inicio,
+.fichaje-pastilla--pausa_fin { background: rgba(245,158,11,.16); color: #fcd34d; }
+
+.fila-incidencia { background: rgba(245,158,11,.06); }
+
+/* ---------- Quién está dentro ---------- */
+.dentro-lista { display: flex; gap: .75rem; flex-wrap: wrap; }
+.dentro-persona {
+    display: flex; align-items: center; gap: .45rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 999px; padding: .35rem .8rem;
+    font-size: .84rem;
+}
+
+/* ---------- Acciones en tabla ---------- */
+.acciones-fila { display: flex; gap: .3rem; flex-wrap: wrap; }
+
+@media (max-width: 640px) {
+    .fichaje-reloj { font-size: 2.5rem; }
+    .boton-fichar { width: 100%; }
+    .semana-barras { gap: .25rem; }
+}

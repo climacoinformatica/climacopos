@@ -1,0 +1,58 @@
+/* ============================================================
+   LOGOTIPO DEL SALON
+   ============================================================ */
+
+/* ---------- En la cabecera del panel ---------- */
+.marca-logo {
+    display: block;
+    height: 46px;
+    width: auto;
+    max-width: 260px;
+    object-fit: contain;
+
+    /**
+     * FONDO CLARO DETRAS
+     *
+     * El logotipo de CLIMACO POS lleva texto azul marino, casi negro.
+     * Sobre la cabecera oscura del panel no se leeria.
+     *
+     * Un fondo claro redondeado lo resuelve para cualquier logotipo, sea
+     * claro u oscuro, sin obligar al salon a tener una version especial.
+     * Es lo que hacen las aplicaciones que aceptan logotipos de terceros.
+     */
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+/* ---------- En el portal, que ya es claro ---------- */
+.portal .marca-logo {
+    background: transparent;
+    padding: 0;
+    height: 44px;
+    max-width: 240px;
+}
+
+/* ---------- Vista previa en Ajustes ---------- */
+.logo-actual {
+    background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%)
+                50% / 16px 16px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* El damero de fondo deja ver si el PNG tiene transparencia de verdad */
+
+.logo-actual__imagen {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.logo-actual__pie { margin-top: 1rem; }

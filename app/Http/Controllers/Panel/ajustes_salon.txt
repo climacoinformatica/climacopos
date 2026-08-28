@@ -1,0 +1,15 @@
+    /**
+     * Ajustes que son del SALON, no de un terminal concreto.
+     *
+     * Este metodo entra en HardwareController.
+     */
+    public function guardarSalon(\Illuminate\Http\Request $peticion)
+    {
+        $datos = $peticion->validate([
+            'tras_cobrar' => ['required', 'in:NADA,SELECTOR,INICIO'],
+        ]);
+
+        tenant()->update($datos);
+
+        return back()->with('exito', 'Ajuste guardado.');
+    }

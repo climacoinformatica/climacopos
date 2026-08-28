@@ -1,0 +1,25 @@
+    /**
+     * Encola el parte de trabajo de un dia.
+     *
+     * Este metodo entra en GestorImpresion, junto a cierre().
+     */
+    public function parteTrabajo(
+        \Illuminate\Support\Carbon $fecha,
+        ?Terminal $terminal = null,
+    ): ?ColaImpresion {
+        $terminal ??= \App\Support\SesionSalon::terminal();
+
+        if (! $terminal || ! $terminal->ajuste('impresora_activa', true)) {
+            return null;
+        }
+
+        $datos = (new GestorProduccion())->delDia($fecha);
+
+        return $this->encolar(
+            $terminal,
+            'PARTE',
+            'IMPRESORA',
+            base64_encode($this->constructor->parteTrabajo($datos, $fecha)),
+            'Parte de trabajo ' . $fecha->format('d/m/Y'),
+        );
+    }

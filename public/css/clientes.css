@@ -1,0 +1,135 @@
+/* ============================================================
+   FICHA DEL CLIENTE
+   ============================================================ */
+
+.ficha-columnas {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+/* ---------- Aviso en listados ---------- */
+.aviso-ficha-mini {
+    display: inline-block;
+    background: rgba(239,68,68,.15);
+    color: #fca5a5;
+    font-size: .68rem; font-weight: 600;
+    padding: .1rem .45rem; border-radius: 999px;
+    margin-top: .2rem;
+}
+
+/* ---------- Fichas técnicas ---------- */
+.fichas-lista { display: flex; flex-direction: column; gap: .85rem; }
+
+.ficha-tecnica {
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    padding: .9rem 1rem;
+}
+
+.ficha-tecnica__cabecera {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: .75rem; margin-bottom: .5rem;
+}
+.ficha-tecnica__cabecera strong { display: block; font-size: .92rem; margin-top: .2rem; }
+.ficha-tecnica__cabecera time { color: var(--suave); font-size: .76rem; white-space: nowrap; }
+
+.ficha-tecnica__tipo {
+    display: inline-block;
+    background: var(--marca); color: #fff;
+    font-size: .62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: .1rem .45rem; border-radius: 999px;
+}
+
+/* La fórmula se destaca porque es lo que se busca al abrir la ficha */
+.ficha-tecnica__formula {
+    background: var(--panel);
+    border-left: 3px solid var(--marca);
+    border-radius: 0 7px 7px 0;
+    padding: .5rem .7rem;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: .82rem;
+    margin: .5rem 0;
+    color: var(--texto);
+}
+
+.ficha-tecnica__texto {
+    font-size: .82rem; color: var(--suave);
+    line-height: 1.55; margin: .35rem 0;
+}
+.ficha-tecnica__texto--aviso { color: var(--aviso); }
+
+.ficha-tecnica__pie {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: .5rem; margin-top: .6rem; padding-top: .5rem;
+    border-top: 1px solid var(--borde);
+    font-size: .74rem; color: var(--suave);
+}
+.ficha-tecnica__acciones { display: flex; gap: .75rem; }
+.ficha-tecnica__acciones a { color: var(--marca); text-decoration: none; }
+.ficha-tecnica__acciones a:hover { text-decoration: underline; }
+
+/* ---------- Editor de fórmula ---------- */
+.componente {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 90px 80px auto;
+    gap: .4rem;
+    margin-bottom: .4rem;
+    align-items: center;
+}
+.componente input, .componente select {
+    padding: .5rem .6rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 8px; color: var(--texto);
+    font-size: .86rem;
+}
+.componente__quitar {
+    background: transparent; border: 1px solid var(--borde);
+    border-radius: 7px; color: var(--suave);
+    cursor: pointer; padding: .35rem .55rem; line-height: 1;
+}
+.componente__quitar:hover { color: var(--error); border-color: var(--error); }
+
+/* ---------- Barra lateral ---------- */
+.datos-cliente { display: flex; flex-direction: column; gap: .7rem; }
+.datos-cliente dt {
+    font-size: .7rem; color: var(--suave);
+    text-transform: uppercase; letter-spacing: .4px;
+}
+.datos-cliente dd { font-size: .86rem; line-height: 1.5; }
+
+.bono-mini {
+    background: var(--panel2);
+    border-left: 3px solid #8b5cf6;
+    border-radius: 0 8px 8px 0;
+    padding: .5rem .7rem;
+    margin-bottom: .5rem;
+}
+.bono-mini--gastado { opacity: .5; border-left-color: var(--borde); }
+.bono-mini strong { display: block; font-size: .84rem; }
+.bono-mini small { display: block; color: var(--suave); font-size: .74rem; }
+
+.movimientos-mini {
+    list-style: none;
+    margin-top: 1rem; padding-top: .75rem;
+    border-top: 1px solid var(--borde);
+}
+.movimientos-mini li {
+    display: flex; justify-content: space-between;
+    gap: .5rem; font-size: .76rem;
+    padding: .25rem 0;
+    color: var(--suave);
+}
+.movimientos-mini strong { font-variant-numeric: tabular-nums; color: var(--texto); }
+
+@media (max-width: 1000px) {
+    .ficha-columnas { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+    .componente { grid-template-columns: 1fr 1fr; }
+    .componente__quitar { grid-column: span 2; }
+}

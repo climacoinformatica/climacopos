@@ -1,0 +1,56 @@
+/* ============================================================
+   PANEL DE SUPERADMINISTRACIÓN
+   ============================================================ */
+
+.cabecera--admin { border-bottom-color: #7c3aed; }
+
+.insignia-admin {
+    background: #7c3aed; color: #fff;
+    font-size: .6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    padding: .12rem .45rem; border-radius: 999px;
+    margin-left: .4rem; vertical-align: middle;
+}
+
+/* ---------- Acceso ---------- */
+.acceso-admin {
+    max-width: 380px; margin: 4rem auto;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 2rem;
+}
+.acceso-admin h1 { font-size: 1.4rem; text-align: center; margin-bottom: .25rem; }
+.acceso-admin__sub {
+    text-align: center; color: var(--suave);
+    font-size: .82rem; margin-bottom: 1.75rem;
+}
+
+/* ---------- Guía de configuración ---------- */
+.guia {
+    background: rgba(99,102,241,.08);
+    border: 1px solid rgba(99,102,241,.3);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+.guia h2 { font-size: .95rem; margin-bottom: .75rem; }
+.guia ol { padding-left: 1.2rem; }
+.guia li {
+    font-size: .87rem; line-height: 1.7;
+    color: var(--suave); margin-bottom: .6rem;
+}
+.guia li strong { color: var(--texto); }
+.guia code {
+    background: var(--panel2); padding: .1rem .35rem;
+    border-radius: 4px; font-size: .82em;
+}
+
+.marca-guardada {
+    background: rgba(16,185,129,.18); color: #6ee7b7;
+    font-size: .62rem; font-weight: 700;
+    padding: .1rem .4rem; border-radius: 999px;
+    margin-left: .35rem; text-transform: uppercase;
+}
+
+.enlace { color: var(--marca); text-decoration: underline; }

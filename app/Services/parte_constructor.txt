@@ -1,0 +1,96 @@
+    /**
+     * Parte de trabajo para la impresora termica.
+     *
+     * Va APARTE del cierre de caja a proposito: el cierre lo maneja quien
+     * cuadra el efectivo, y este es informacion laboral. Dos papeles
+     * separados permiten dar uno a cada quien.
+     *
+     * Este metodo entra en ConstructorTicket, junto a cierre().
+     */
+    public function parteTrabajo(array $datos, \Illuminate\Support\Carbon $fecha): string
+    {
+        $e = new EscPos($this->ancho);
+        $t = $datos['totales'];
+
+        $euros = fn ($n) => number_format((float) $n, 2, ',', '.') . ' EUR';
+
+        $e->inicializar()->juegoCaracteres();
+
+        // ---- Cabecera
+        $e->centrar()->negrita()->tamano(1, 2)
+          ->linea('PARTE DE TRABAJO')
+          ->normal()->negrita(false);
+
+        $e->linea($this->empresa->nombre_comercial ?? '')
+          ->linea($fecha->format('d/m/Y'))
+          ->saltos(1)->izquierda()->separador();
+
+        if (empty($datos['filas']) || count($datos['filas']) === 0) {
+            $e->centrar()->linea('Sin ventas este dia')->izquierda();
+            $e->separador()->saltos(3)->cortar();
+
+            return $e->salida();
+        }
+
+        // ---- Una persona por bloque
+        foreach ($datos['filas'] as $fila) {
+            $e->negrita()->linea(mb_strtoupper($fila['usuario']->nombre))->negrita(false);
+
+            $e->fila('  Servicios', (string) $fila['servicios']);
+
+            if ($fila['productos'] > 0) {
+                $e->fila('  Productos', (string) $fila['productos']);
+            }
+
+            $e->fila('  Facturado', $euros($fila['facturado']));
+
+            if ($fila['medio'] > 0) {
+                $e->fila('  Ticket medio', $euros($fila['medio']));
+            }
+
+            if ($fila['comision'] > 0) {
+                $e->negrita()->fila('  Le corresponde', $euros($fila['comision']))->negrita(false);
+            }
+
+            $e->saltos(1);
+        }
+
+        // ---- Totales
+        $e->separador('=');
+        $e->negrita()
+          ->fila('TOTAL SERVICIOS', (string) $t['servicios'])
+          ->fila('TOTAL FACTURADO', $euros($t['facturado']));
+
+        if ($t['comisiones'] > 0) {
+            $e->fila('TOTAL COMISIONES', $euros($t['comisiones']));
+        }
+
+        $e->negrita(false)->separador();
+
+        /**
+         * Las lineas sin ejecutor SI se imprimen.
+         *
+         * Quien firme el parte tiene que saber que hay importes sin
+         * repartir: callarlo haria cuadrar el papel a costa de que
+         * alguien cobre de menos.
+         */
+        if ($t['sin_asignar'] > 0) {
+            $e->saltos(1)->negrita()->linea('SIN PROFESIONAL ASIGNADO')->negrita(false)
+              ->fila('  Lineas', (string) $t['sin_asignar'])
+              ->fila('  Importe', $euros($t['sin_asignar_imp']))
+              ->linea('  No estan repartidas.')
+              ->separador();
+        }
+
+        // ---- Pie
+        $e->saltos(1)->centrar()
+          ->linea('Recoge lo EJECUTADO por cada uno,')
+          ->linea('no quien lo cobro.')
+          ->linea('No sustituye al cierre de caja.')
+          ->saltos(1)
+          ->linea($fecha->format('d/m/Y') . ' - impreso ' . now()->format('H:i'));
+
+        $e->saltos(3)->cortar();
+
+        return $e->salida();
+    }

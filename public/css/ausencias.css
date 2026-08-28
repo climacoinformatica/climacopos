@@ -1,0 +1,90 @@
+/* ============================================================
+   AUSENCIAS Y VACACIONES
+   ============================================================ */
+
+/* ---------- Solicitudes por resolver ---------- */
+.solicitud {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-left: 3px solid var(--aviso);
+    border-radius: 0 10px 10px 0;
+    padding: .85rem 1rem;
+    margin-bottom: .6rem;
+}
+.solicitud__datos { min-width: 220px; flex: 1; }
+.solicitud__datos strong { margin-right: .4rem; }
+.solicitud__datos div { font-size: .84rem; color: var(--suave); margin-top: .3rem; }
+.solicitud__datos small { display: block; color: var(--suave); font-size: .76rem; margin-top: .2rem; }
+
+.solicitud__acciones { display: flex; gap: .5rem; align-items: flex-start; flex-wrap: wrap; }
+.solicitud__rechazo { display: flex; gap: .3rem; }
+.solicitud__rechazo input {
+    padding: .4rem .6rem; width: 190px;
+    background: var(--panel); border: 1px solid var(--borde);
+    border-radius: 7px; color: var(--texto); font-size: .8rem;
+}
+
+/* ---------- Calendario del equipo ---------- */
+.calendario-envoltorio { overflow-x: auto; }
+
+.calendario-equipo {
+    width: 100%; border-collapse: collapse;
+    font-size: .76rem;
+}
+.calendario-equipo th, .calendario-equipo td {
+    padding: .3rem .15rem;
+    text-align: center;
+    border-bottom: 1px solid var(--panel2);
+    min-width: 24px;
+}
+.calendario-equipo th {
+    color: var(--suave); font-weight: 600;
+    border-bottom: 1px solid var(--borde);
+}
+.calendario-equipo th small {
+    display: block; font-size: .62rem;
+    text-transform: uppercase; opacity: .7;
+}
+
+.calendario-equipo__nombre {
+    text-align: left !important;
+    white-space: nowrap;
+    padding-right: 1rem !important;
+    position: sticky; left: 0;
+    background: var(--panel);
+    min-width: 130px;
+}
+
+.calendario-equipo__finde { background: rgba(148,163,184,.06); }
+.calendario-equipo__hoy {
+    background: rgba(99,102,241,.12);
+    box-shadow: inset 0 0 0 1px rgba(99,102,241,.4);
+}
+
+/* Marcas de color por tipo */
+.marca-ausencia {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+.marca-ausencia--vacaciones      { background: #10b981; }
+.marca-ausencia--baja            { background: #ef4444; }
+.marca-ausencia--maternidad      { background: #ec4899; }
+.marca-ausencia--permiso         { background: #6366f1; }
+.marca-ausencia--asuntos_propios { background: #f59e0b; }
+.marca-ausencia--formacion       { background: #8b5cf6; }
+.marca-ausencia--otro            { background: #94a3b8; }
+
+.leyenda-ausencias {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    padding: .85rem .5rem 0;
+    font-size: .76rem; color: var(--suave);
+}
+.leyenda-ausencias span { display: flex; align-items: center; gap: .35rem; }
+
+@media (max-width: 640px) {
+    .solicitud__rechazo input { width: 130px; }
+}

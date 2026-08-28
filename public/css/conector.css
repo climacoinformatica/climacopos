@@ -1,0 +1,55 @@
+/* ============================================================
+   CONECTOR DE IMPRESION
+   ============================================================ */
+
+.conector {
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.conector__estado {
+    font-size: .88rem;
+    padding: .6rem .85rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.conector__estado--ok {
+    background: rgba(16,185,129,.12);
+    border: 1px solid rgba(16,185,129,.3);
+    color: #6ee7b7;
+}
+.conector__estado--falta {
+    background: rgba(245,158,11,.12);
+    border: 1px solid rgba(245,158,11,.3);
+    color: #fcd34d;
+}
+
+.conector__nota {
+    font-size: .86rem;
+    color: var(--suave);
+    line-height: 1.6;
+    margin-bottom: .75rem;
+}
+
+.conector__pasos {
+    margin: 1rem 0 1.25rem 1.1rem;
+    font-size: .88rem;
+    color: var(--suave);
+}
+.conector__pasos li { padding: .2rem 0; }
+
+.conector__ayuda { margin-top: 1.25rem; font-size: .85rem; }
+.conector__ayuda summary {
+    cursor: pointer;
+    color: var(--suave);
+    padding: .4rem 0;
+}
+.conector__ayuda summary:hover { color: var(--texto); }
+.conector__ayuda p {
+    color: var(--suave);
+    line-height: 1.6;
+    margin: .5rem 0 .5rem 1rem;
+}

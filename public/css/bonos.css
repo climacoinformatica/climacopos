@@ -1,0 +1,90 @@
+/* ============================================================
+   BONOS Y PACKS
+   ============================================================ */
+
+.rejilla-bonos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.tarjeta-bono {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--color, var(--marca));
+    border-radius: 12px;
+    padding: 1.1rem;
+    display: flex; flex-direction: column;
+}
+.tarjeta-bono--inactivo { opacity: .55; }
+
+.tarjeta-bono__cabecera {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: .5rem; margin-bottom: .6rem;
+}
+.tarjeta-bono__cabecera h3 { font-size: 1rem; line-height: 1.3; }
+
+.tarjeta-bono__precio {
+    font-size: 1.7rem; font-weight: 700;
+    line-height: 1.1; margin-bottom: .4rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.tarjeta-bono__detalle {
+    font-size: .85rem; color: var(--suave);
+    line-height: 1.5; margin-bottom: .5rem;
+}
+.tarjeta-bono__detalle small { font-size: .76rem; }
+
+.tarjeta-bono__ahorro {
+    display: inline-block;
+    background: rgba(16,185,129,.15); color: #6ee7b7;
+    font-size: .74rem; font-weight: 600;
+    padding: .2rem .55rem; border-radius: 999px;
+    margin-bottom: .75rem;
+}
+
+.tarjeta-bono__datos {
+    list-style: none; flex: 1;
+    margin-bottom: .9rem;
+}
+.tarjeta-bono__datos li {
+    font-size: .76rem; color: var(--suave);
+    padding: .15rem 0;
+}
+
+.tarjeta-bono__acciones {
+    display: flex; gap: .4rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--panel2);
+}
+
+/* ---------- Línea del TPV pagada con bono ---------- */
+.ticket-linea--bono .ticket-linea__importe { color: #a78bfa; }
+.ticket-linea--bono { border-left: 3px solid #8b5cf6; padding-left: .5rem; }
+
+/* ---------- Aviso de saldo en el cobro ---------- */
+.aviso-saldo {
+    background: rgba(16,185,129,.12);
+    border: 1px solid rgba(16,185,129,.3);
+    color: #6ee7b7;
+    font-size: .82rem; text-align: center;
+    padding: .55rem .8rem; border-radius: 9px;
+    margin-bottom: 1rem;
+}
+
+#bloqueVale label {
+    display: block; font-size: .78rem;
+    color: var(--suave); margin-bottom: .3rem;
+}
+#codigoVale {
+    width: 100%; padding: .8rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 10px; color: var(--texto);
+    font-size: 1.1rem; text-align: center;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 640px) {
+    .rejilla-bonos { grid-template-columns: 1fr; }
+}

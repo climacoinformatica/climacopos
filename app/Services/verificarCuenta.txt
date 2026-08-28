@@ -1,0 +1,20 @@
+    /**
+     * Correo de verificación de una cuenta nueva.
+     *
+     * Sale siempre del SMTP de la plataforma, no del de ningún salón:
+     * en este punto la cuenta todavía no tiene salón asociado.
+     */
+    public function verificarCuenta(\App\Models\Cuenta $cuenta): void
+    {
+        $enlace = route('web.verificar', $cuenta->token_verificacion);
+
+        $this->enviar(
+            $cuenta->email,
+            'Confirma tu cuenta de CLIMACO',
+            'correos.plataforma.verificar-cuenta',
+            [
+                'cuenta' => $cuenta,
+                'enlace' => $enlace,
+            ],
+        );
+    }

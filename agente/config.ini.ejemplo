@@ -1,0 +1,24 @@
+; =====================================================================
+;  AGENTE CLIMACO POS - Configuracion
+;
+;  Copia este fichero como  config.ini  y rellena los datos.
+; =====================================================================
+
+[servidor]
+
+; URL del salon, sin barra final.
+; Es la misma que usas para entrar al panel.
+url = https://jectan.climacopos.com
+
+; Token del agente.
+; Se genera en:  Panel > Ajustes > Hardware > Generar token
+; Solo se muestra UNA vez; si lo pierdes, genera otro.
+token = PEGA_AQUI_EL_TOKEN
+
+[agente]
+
+; Fichero de registro. Se rota solo al llegar a 5 MB.
+log = agente.log
+
+; Ponlo en 1 para ver el detalle de los errores de conexion.
+debug = 0

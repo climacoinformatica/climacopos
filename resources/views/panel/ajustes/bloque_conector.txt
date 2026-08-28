@@ -1,0 +1,53 @@
+{{--
+    Bloque del conector de impresion.
+
+    Va DENTRO de la tarjeta de cada terminal, cerca del aviso de «el
+    agente todavia no se ha conectado». Fuera del formulario, porque es
+    un enlace de descarga y no un campo que guardar.
+--}}
+
+<div class="conector">
+    <h3 class="subseccion">Conector de impresión</h3>
+
+    @if ($terminal->agente_ultima_conexion)
+        <p class="conector__estado conector__estado--ok">
+            Funcionando. Última señal
+            {{ $terminal->agente_ultima_conexion->diffForHumans() }}.
+        </p>
+    @else
+        <p class="conector__estado conector__estado--falta">
+            <strong>Todavía no está instalado en este equipo.</strong>
+            Sin él los tickets no salen por la impresora.
+        </p>
+    @endif
+
+    <ol class="conector__pasos">
+        <li>Descarga el conector y ábrelo con doble clic.</li>
+        <li>Windows pedirá permiso: acepta.</li>
+        <li>Elige tu impresora de la lista.</li>
+        <li>Listo. Arranca solo cada vez que enciendas el ordenador.</li>
+    </ol>
+
+    <a href="{{ route('panel.conector.descargar', $terminal) }}"
+       class="boton boton--marca">
+        Descargar el conector
+    </a>
+
+    <details class="conector__ayuda">
+        <summary>Windows dice que el archivo no es seguro</summary>
+
+        <p>
+            Es normal y no significa que haya nada malo: pasa con todos los
+            programas que no llevan un certificado de pago.
+        </p>
+        <p>
+            En el aviso de Windows, pulsa <strong>Más información</strong> y
+            luego <strong>Ejecutar de todas formas</strong>. Si tu antivirus lo
+            bloquea, desactívalo un momento mientras lo instalas.
+        </p>
+        <p>
+            Descárgalo siempre desde aquí, desde tu propio panel. Uno que te
+            pase otra persona no funcionará: cada salón tiene el suyo.
+        </p>
+    </details>
+</div>

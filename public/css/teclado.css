@@ -1,0 +1,220 @@
+/* ============================================================
+   TECLADO EN PANTALLA
+   ============================================================
+
+   OJO CON EL PREFIJO
+
+   Todas las clases van con `tp-`. La pantalla del selector de usuario
+   ya tenia sus propias `.teclado` y `.tecla` desde la Fase 1, con otro
+   aspecto y otro tamano. Sin prefijo, las dos hojas se pisarian y el
+   PIN del selector cambiaria de forma sin que nadie entendiera por que.
+   ============================================================ */
+
+.tp {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+
+    background: var(--panel, #0f172a);
+    border-top: 1px solid var(--borde, #1e293b);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, .5);
+
+    padding: .75rem;
+    max-width: 560px;
+    margin: 0 auto;
+
+    animation: tp-entra .16s ease-out;
+}
+.tp[hidden] { display: none !important; }
+
+@keyframes tp-entra {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+/**
+ * Con el teclado abierto se deja hueco abajo.
+ * Sin esto, el campo que se está rellenando puede quedar tapado
+ * justo por el teclado que sirve para rellenarlo.
+ */
+body.con-teclado { padding-bottom: 340px; }
+
+/* ---------- Cabecera ---------- */
+.tp__cabecera {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .25rem .5rem .6rem;
+    border-bottom: 1px solid var(--borde, #1e293b);
+    margin-bottom: .6rem;
+}
+
+.tp__etiqueta {
+    font-size: .78rem;
+    color: var(--suave, #94a3b8);
+    white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+    max-width: 45%;
+}
+
+.tp__valor {
+    flex: 1;
+    text-align: right;
+    font-size: 1.5rem; font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--texto, #e2e8f0);
+    white-space: nowrap; overflow: hidden;
+    min-height: 1.6rem;
+}
+
+.tp__cerrar {
+    background: none; border: 0;
+    color: var(--suave, #94a3b8);
+    font-size: 1.6rem; line-height: 1;
+    cursor: pointer; padding: 0 .25rem;
+}
+
+/* ---------- Teclas ---------- */
+
+/**
+ * El contenedor no tenia ninguna regla.
+ *
+ * El JavaScript le pone `tp__teclas`, pero esa clase no existia en la
+ * hoja, asi que las teclas heredaban lo que hubiera y salian
+ * descolocadas.
+ */
+.tp__teclas { display: block; }
+
+.tp__rejilla--numerica {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+}
+
+.tp-tecla {
+    /**
+     * 56 px de alto mínimo.
+     *
+     * Es la medida a partir de la cual un dedo acierta sin mirar. Con
+     * teclas más pequeñas se pulsa la de al lado, y en un cobro eso
+     * significa cobrar 12 € en vez de 21.
+     */
+    min-height: 56px;
+
+    background: var(--panel2, #1e293b);
+    border: 1px solid var(--borde, #334155);
+    border-radius: 10px;
+
+    color: var(--texto, #e2e8f0);
+    font-size: 1.35rem; font-weight: 600;
+
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    transition: transform .06s, filter .06s;
+}
+.tp-tecla:active {
+    transform: scale(.95);
+    filter: brightness(1.4);
+}
+
+.tp-tecla--accion    { font-size: 1.2rem; color: var(--suave, #94a3b8); }
+.tp-tecla--secundaria{ font-size: .85rem; color: var(--suave, #94a3b8); }
+.tp-tecla--aceptar {
+    background: var(--ok, #10b981);
+    border-color: var(--ok, #10b981);
+    color: #04231a;
+    font-size: 1rem;
+}
+
+.tp__pie {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+/* ---------- Puntos del PIN ---------- */
+.tp__puntos {
+    display: flex; justify-content: center; gap: .75rem;
+    padding: .5rem 0 1rem;
+}
+
+.tp-punto {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--suave, #94a3b8);
+    transition: background .12s;
+}
+.tp-punto--lleno {
+    background: var(--marca, #6366f1);
+    border-color: var(--marca, #6366f1);
+}
+
+/* ---------- Teclado de texto ---------- */
+.tp__rejilla--texto {
+    display: flex; flex-direction: column; gap: .35rem;
+}
+
+.tp__fila {
+    display: flex; gap: .3rem;
+    justify-content: center;
+}
+
+.tp-tecla--letra {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 0;
+}
+
+.tp-tecla--espacio { flex: 4; min-height: 48px; font-size: .85rem; }
+
+.tp__rejilla--texto .tp-tecla--secundaria,
+.tp__rejilla--texto .tp-tecla--accion { flex: 1.4; min-height: 48px; }
+
+/* ---------- Adaptación ---------- */
+@media (min-width: 900px) {
+    /**
+     * En pantalla grande NO se encoge.
+     *
+     * Antes se quedaba en 380 px anclado a una esquina, y para escribir
+     * una contrasena con letras era inservible: teclas diminutas y lejos
+     * de la vista. Ahora mantiene el ancho comodo y va centrado abajo,
+     * que es donde la mano lo busca en una pantalla tactil.
+     */
+    .tp {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        bottom: 0;
+        width: 100%;
+        max-width: 720px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    @keyframes tp-entra {
+        from { transform: translateX(-50%) translateY(100%); }
+        to   { transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Teclas mas grandes: hay sitio de sobra */
+    .tp-tecla { min-height: 62px; font-size: 1.45rem; }
+    .tp-tecla--letra { min-height: 54px; font-size: 1.15rem; }
+
+    body.con-teclado { padding-bottom: 380px; }
+}
+
+@media (max-width: 380px) {
+    .tp-tecla { min-height: 50px; font-size: 1.2rem; }
+    .tp-tecla--letra { min-height: 42px; font-size: .95rem; }
+    body.con-teclado { padding-bottom: 300px; }
+}
+
+/* Impresión: el teclado no existe en papel */
+@media print {
+    .tp { display: none !important; }
+    body.con-teclado { padding-bottom: 0; }
+}

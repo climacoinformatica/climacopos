@@ -1,0 +1,29 @@
+/* ============================================================
+   ACCESO Y CONTRASENA
+   ============================================================ */
+
+.fila-acceso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.enlace-olvidada {
+    font-size: .88rem;
+    white-space: nowrap;
+}
+
+/* ---------- Bloque de cambio de contrasena ---------- */
+.bloque-contrasena {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--borde);
+}
+
+.bloque-contrasena h2 {
+    font-size: 1.15rem;
+    margin-bottom: 1.25rem;
+}

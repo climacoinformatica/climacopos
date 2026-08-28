@@ -1,0 +1,118 @@
+/* ============================================================
+   BARRA DE AVISOS DESTELLANTE
+   ============================================================ */
+
+.barra-avisos {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 60;
+    display: flex; align-items: center; justify-content: center; gap: .6rem;
+    padding: .55rem 1rem;
+    background: #475569;
+    color: #fff;
+    font-size: .88rem; font-weight: 600;
+    cursor: pointer;
+    border: 0;
+    text-align: center;
+}
+.barra-avisos[hidden] { display: none; }
+
+.barra-avisos__campana { font-size: 1.05rem; }
+
+.barra-avisos__contador {
+    background: rgba(255,255,255,.25);
+    padding: .05rem .5rem;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Solo destella cuando hay reservas SIN CONFIRMAR, no con cualquier aviso */
+@keyframes destello {
+    0%, 100% { background: #d32f2f; box-shadow: 0 0 0 rgba(211,47,47,0); }
+    50%      { background: #ff6659; box-shadow: 0 2px 22px rgba(211,47,47,.85); }
+}
+.barra-avisos--activa { animation: destello 1.6s ease-in-out infinite; }
+
+/* Quien tenga activada la reducción de movimiento ve color fijo */
+@media (prefers-reduced-motion: reduce) {
+    .barra-avisos--activa { animation: none; background: #d32f2f; }
+}
+
+/* La barra empuja el contenido para no tapar la cabecera */
+body.con-barra-avisos .cabecera { top: 38px; }
+body.con-barra-avisos { padding-top: 38px; }
+
+/* ---------- Panel lateral ---------- */
+.panel-avisos {
+    position: fixed;
+    top: 38px; right: 0; bottom: 0;
+    width: 100%; max-width: 400px;
+    z-index: 59;
+    background: var(--panel);
+    border-left: 1px solid var(--borde);
+    box-shadow: -8px 0 32px rgba(0,0,0,.4);
+    display: flex; flex-direction: column;
+    animation: entrar .18s ease-out;
+}
+.panel-avisos[hidden] { display: none; }
+
+@keyframes entrar {
+    from { transform: translateX(18px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+.panel-avisos__cabecera {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1rem;
+    border-bottom: 1px solid var(--borde);
+}
+.panel-avisos__cabecera h2 { font-size: .95rem; font-weight: 600; }
+.panel-avisos__cerrar {
+    background: none; border: 0; color: var(--suave);
+    font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0 .25rem;
+}
+.panel-avisos__cerrar:hover { color: var(--texto); }
+
+.avisos-lista {
+    list-style: none;
+    flex: 1; overflow-y: auto;
+    padding: .6rem;
+}
+
+.aviso-item {
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    padding: .7rem .8rem;
+    margin-bottom: .6rem;
+    transition: opacity .3s, transform .3s;
+}
+.aviso-item--accion { border-left: 3px solid var(--aviso); }
+.aviso-item--procesando { opacity: .5; pointer-events: none; }
+.aviso-item--resuelto { opacity: 0; transform: translateX(30px); }
+.aviso-item--vacio, .aviso-item--cargando {
+    text-align: center; color: var(--suave);
+    font-size: .85rem; padding: 2rem 1rem;
+    background: transparent; border: 0;
+}
+
+.aviso-item__cabecera { display: flex; gap: .6rem; align-items: flex-start; }
+.aviso-item__icono { font-size: 1.05rem; line-height: 1.3; }
+.aviso-item__texto { flex: 1; min-width: 0; }
+.aviso-item__texto strong { display: block; font-size: .87rem; }
+.aviso-item__texto span {
+    display: block; color: var(--suave); font-size: .78rem;
+    margin-top: .12rem; line-height: 1.4;
+}
+.aviso-item__hace { color: var(--suave); font-size: .7rem; white-space: nowrap; }
+
+.aviso-item__acciones {
+    display: flex; gap: .4rem; flex-wrap: wrap;
+    margin-top: .65rem;
+}
+.aviso-item__acciones .boton { flex: 1; justify-content: center; text-align: center; }
+
+@media (max-width: 640px) {
+    .barra-avisos { font-size: .8rem; padding: .5rem .75rem; }
+    .panel-avisos { max-width: 100%; }
+}

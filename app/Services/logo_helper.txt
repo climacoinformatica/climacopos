@@ -1,0 +1,27 @@
+    /**
+     * Direccion del logotipo que toca mostrar.
+     *
+     * El del salon si lo ha subido; el de CLIMACO POS si no. Al borrar
+     * el suyo, `logo` vuelve a null y aqui se cae solo al de la marca:
+     * no hace falta ninguna comprobacion extra en las vistas.
+     */
+    if (! function_exists('logo_salon')) {
+        function logo_salon(): string
+        {
+            $propio = tenant('logo');
+
+            if (filled($propio)) {
+                return route('panel.logotipo.ver');
+            }
+
+            return asset(\App\Services\GestorLogotipo::POR_DEFECTO);
+        }
+    }
+
+    /** ¿El salon tiene logotipo propio, o se esta usando el nuestro? */
+    if (! function_exists('logo_es_propio')) {
+        function logo_es_propio(): bool
+        {
+            return filled(tenant('logo'));
+        }
+    }

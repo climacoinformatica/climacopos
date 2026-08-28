@@ -1,0 +1,30 @@
+{{--
+    Este bloque va DENTRO del formulario del terminal, junto a los demas
+    ajustes de impresora. Pegalo justo despues del selector de «Ancho del
+    papel», antes del cierre de esa rejilla de campos.
+--}}
+
+<div class="campo">
+    <label>Imprimir el ticket al cobrar</label>
+    <select name="ticket_imprimir">
+        @foreach ([
+            'SIEMPRE'   => 'Siempre',
+            'PREGUNTAR' => 'Preguntar cada vez',
+            'NUNCA'     => 'Nunca, solo si lo piden',
+        ] as $clave => $texto)
+            <option value="{{ $clave }}"
+                    @selected($v('ticket_imprimir', 'SIEMPRE') === $clave)>
+                {{ $texto }}
+            </option>
+        @endforeach
+    </select>
+    <p class="campo__pista">
+        Con <strong>«preguntar»</strong>, tras cobrar aparece un botón y decide
+        quien atiende. Con <strong>«nunca»</strong>, el ticket se puede imprimir
+        después desde el listado si la clienta lo pide.
+    </p>
+    <p class="campo__pista">
+        La factura se registra y se envía a Hacienda <strong>se imprima o
+        no</strong>: esto solo decide si sale el papel.
+    </p>
+</div>

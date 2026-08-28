@@ -1,0 +1,57 @@
+/* ============================================================
+   ICONOS DEL MENU DE INICIO
+   ============================================================ */
+
+.menu a {
+    /* Se reordena para que el icono vaya arriba */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .15rem;
+}
+
+.menu__icono {
+    width: 52px;
+    height: 52px;
+
+    /**
+     * Fondo redondeado propio.
+     *
+     * Los PNG vienen con fondo blanco cuadrado, y sobre el panel oscuro
+     * se verian como recuadros. Recortandolos con border-radius quedan
+     * como iconos de aplicacion, que es lo que son.
+     *
+     * Si algun dia hay versiones con transparencia, basta con quitar
+     * background y padding de aqui.
+     */
+    border-radius: 12px;
+    object-fit: cover;
+
+    margin-bottom: .6rem;
+
+    /* Ligera sombra para separarlos del fondo */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+}
+
+/* Al pasar por encima, el icono acompaña al resto de la tarjeta */
+.menu a:hover .menu__icono {
+    transform: scale(1.06);
+    transition: transform .15s;
+}
+
+@media (max-width: 640px) {
+    .menu__icono { width: 44px; height: 44px; margin-bottom: .45rem; }
+}
+
+/* En pantallas pequeñas de verdad, icono a la izquierda del texto */
+@media (max-width: 420px) {
+    .menu a {
+        flex-direction: row;
+        align-items: center;
+        gap: .85rem;
+        flex-wrap: wrap;
+    }
+    .menu__icono { margin-bottom: 0; width: 40px; height: 40px; }
+    .menu a strong { flex: 1; }
+    .menu a span { width: 100%; }
+}

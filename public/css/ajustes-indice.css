@@ -1,0 +1,43 @@
+/* ============================================================
+   INDICE DE AJUSTES
+   ============================================================ */
+
+.rejilla-ajustes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.tarjeta-ajuste {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: .15s;
+}
+.tarjeta-ajuste:hover {
+    border-color: var(--marca);
+    transform: translateY(-2px);
+}
+
+.tarjeta-ajuste strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: .3rem;
+}
+
+.tarjeta-ajuste span {
+    display: block;
+    font-size: .84rem;
+    color: var(--suave);
+    line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+    .rejilla-ajustes { grid-template-columns: 1fr; gap: .75rem; }
+    .tarjeta-ajuste { padding: 1rem; }
+}

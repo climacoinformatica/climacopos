@@ -1,0 +1,111 @@
+/* ============================================================
+   BUSCADOR DE CLIENTE EN EL TPV
+   ============================================================ */
+
+.ticket-cab__cliente {
+    background: transparent;
+    border: 1px dashed var(--borde);
+    border-radius: 7px;
+    padding: .2rem .5rem;
+    margin-top: .25rem;
+    color: var(--suave);
+    font-size: .76rem;
+    cursor: pointer;
+    text-align: left;
+    max-width: 200px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ticket-cab__cliente:hover {
+    border-color: var(--marca);
+    color: var(--texto);
+}
+
+/* ---------- Panel con el saldo del cliente ---------- */
+.panel-cliente {
+    background: rgba(139,92,246,.1);
+    border: 1px solid rgba(139,92,246,.28);
+    border-radius: 9px;
+    padding: .55rem .7rem;
+    margin-top: .6rem;
+}
+.panel-cliente__dato {
+    font-size: .76rem; color: var(--suave);
+    padding: .1rem 0;
+}
+.panel-cliente__dato strong { color: #c4b5fd; }
+.panel-cliente__aviso {
+    font-size: .74rem; color: var(--aviso);
+    margin-top: .3rem; padding-top: .3rem;
+    border-top: 1px solid rgba(139,92,246,.2);
+}
+
+/* ---------- Resultados ---------- */
+.modal-cobro__caja--ancha { max-width: 520px; }
+
+.modal-titulo {
+    font-size: 1.05rem; font-weight: 600;
+    margin-bottom: 1rem; padding-right: 2rem;
+}
+
+.clientes-resultados {
+    list-style: none;
+    max-height: 320px; overflow-y: auto;
+    margin: .5rem 0;
+}
+
+.cliente-resultado {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: .75rem;
+    padding: .65rem .7rem;
+    border-radius: 9px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.cliente-resultado:hover {
+    background: var(--panel2);
+    border-color: var(--marca);
+}
+.cliente-resultado__datos { min-width: 0; }
+.cliente-resultado__datos strong {
+    display: block; font-size: .89rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cliente-resultado__datos small { color: var(--suave); font-size: .74rem; }
+.cliente-resultado__extras { display: flex; gap: .3rem; flex-shrink: 0; }
+
+.pastilla {
+    font-size: .65rem; font-weight: 700;
+    padding: .12rem .45rem; border-radius: 999px;
+    white-space: nowrap;
+}
+.pastilla--saldo { background: rgba(16,185,129,.18); color: #6ee7b7; }
+.pastilla--bono  { background: rgba(139,92,246,.2);  color: #c4b5fd; }
+
+.cliente-cargando {
+    text-align: center; color: var(--suave);
+    font-size: .82rem; padding: 1.25rem;
+}
+
+/* ---------- Alta rápida ---------- */
+.alta-rapida {
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 11px;
+    padding: .85rem;
+    margin-top: .75rem;
+}
+.alta-rapida h4 { font-size: .85rem; margin-bottom: .25rem; }
+.alta-rapida__campos {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: .5rem; margin: .6rem 0;
+}
+.alta-rapida__campos input {
+    padding: .6rem .7rem;
+    background: var(--panel); border: 1px solid var(--borde);
+    border-radius: 8px; color: var(--texto);
+    font-size: .88rem;
+}
+
+@media (max-width: 480px) {
+    .alta-rapida__campos { grid-template-columns: 1fr; }
+}

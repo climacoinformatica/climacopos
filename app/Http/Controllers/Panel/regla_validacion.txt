@@ -1,0 +1,4 @@
+En HardwareController, dentro de guardarTerminal(), anade esta regla
+junto a las demas del validate():
+
+            'ticket_imprimir' => ['nullable', 'in:SIEMPRE,PREGUNTAR,NUNCA'],

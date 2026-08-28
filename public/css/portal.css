@@ -1,0 +1,299 @@
+/* ============================================================
+   PORTAL PÚBLICO DE RESERVAS
+   Móvil primero: la mayoría de reservas llegan desde el enlace
+   de Instagram, en un móvil y con prisa.
+   ============================================================ */
+
+:root {
+    --marca: #6366f1;
+    --texto: #0f172a;
+    --suave: #64748b;
+    --linea: #e2e8f0;
+    --fondo: #f8fafc;
+    --tarjeta: #ffffff;
+    --ok: #059669;
+    --error: #dc2626;
+    --aviso: #d97706;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    line-height: 1.5;
+    -webkit-tap-highlight-color: transparent;
+}
+
+a { color: inherit; }
+
+/* ---------- Cabecera ---------- */
+.portal-cabecera {
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--linea);
+    padding: 1rem;
+    text-align: center;
+    position: sticky; top: 0; z-index: 20;
+}
+.portal-marca { text-decoration: none; font-weight: 700; font-size: 1.1rem; }
+.portal-marca img { max-height: 44px; }
+
+/* ---------- Pasos ---------- */
+.pasos {
+    display: flex; gap: .25rem;
+    background: var(--tarjeta);
+    border-bottom: 1px solid var(--linea);
+    padding: .5rem 1rem .75rem;
+    overflow-x: auto;
+    font-size: .74rem;
+}
+.paso {
+    flex: 1; text-align: center;
+    color: var(--suave);
+    padding-top: .4rem;
+    border-top: 3px solid var(--linea);
+    white-space: nowrap;
+    text-decoration: none;
+}
+.paso--activo { color: var(--marca); border-top-color: var(--marca); font-weight: 600; }
+.paso--hecho  { color: var(--texto); border-top-color: var(--marca); }
+
+/* ---------- Contenido ---------- */
+.portal-contenido { max-width: 640px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+.portal-titulo { font-size: 1.35rem; font-weight: 700; margin-bottom: 1rem; }
+
+.nota {
+    padding: .8rem 1rem; border-radius: 10px;
+    font-size: .88rem; margin-bottom: 1.25rem;
+}
+.nota--ok    { background: #d1fae5; color: #065f46; }
+.nota--error { background: #fee2e2; color: #991b1b; }
+
+.enlace-suave { color: var(--marca); font-size: .85rem; text-decoration: underline; }
+.letra-pequena { font-size: .78rem; color: var(--suave); text-align: center; margin-top: 1rem; }
+
+/* ---------- Servicios ---------- */
+.familia { margin-bottom: 2rem; }
+.familia__titulo {
+    font-size: .8rem; text-transform: uppercase; letter-spacing: .5px;
+    color: var(--suave); margin-bottom: .6rem;
+    display: flex; align-items: center; gap: .5rem;
+}
+.familia__punto { width: 10px; height: 10px; border-radius: 50%; }
+
+.servicios { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+
+.servicio {
+    display: flex; align-items: center; gap: .85rem;
+    background: var(--tarjeta);
+    border: 1px solid var(--linea);
+    border-radius: 14px;
+    padding: .75rem;
+    text-decoration: none;
+    transition: border-color .12s, transform .12s;
+}
+.servicio:active { transform: scale(.99); }
+.servicio:hover { border-color: var(--marca); }
+
+.servicio__foto {
+    width: 62px; height: 62px; flex-shrink: 0;
+    border-radius: 10px; object-fit: cover;
+    display: block;
+}
+.servicio__datos { flex: 1; min-width: 0; }
+.servicio__datos strong { display: block; font-size: .95rem; }
+.servicio__datos small {
+    display: block; color: var(--suave); font-size: .78rem;
+    margin: .15rem 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.servicio__meta { font-size: .76rem; color: var(--suave); }
+.servicio__meta em { color: var(--aviso); font-style: normal; }
+.servicio__precio { font-weight: 700; white-space: nowrap; }
+
+/* ---------- Resumen del servicio elegido ---------- */
+.resumen-servicio {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1.5rem;
+}
+.resumen-servicio .portal-titulo { margin-bottom: .2rem; }
+.resumen-servicio__meta { color: var(--suave); font-size: .85rem; }
+
+/* ---------- Bloques ---------- */
+.bloque { margin-bottom: 1.75rem; }
+.bloque__titulo { font-size: .95rem; font-weight: 600; margin-bottom: .75rem; }
+
+/* ---------- Profesionales ---------- */
+.fichas { display: flex; gap: .6rem; overflow-x: auto; padding-bottom: .3rem; }
+.ficha {
+    flex-shrink: 0; width: 78px;
+    text-align: center; text-decoration: none;
+    font-size: .74rem; color: var(--suave);
+}
+.ficha__avatar {
+    width: 56px; height: 56px; margin: 0 auto .35rem;
+    border-radius: 50%;
+    background: var(--color, var(--marca));
+    color: #fff;
+    display: grid; place-items: center;
+    font-weight: 600; font-size: .9rem;
+    border: 3px solid transparent;
+    overflow: hidden;
+}
+.ficha__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ficha__avatar--todos { background: #cbd5e1; color: var(--texto); }
+.ficha--activa { color: var(--texto); font-weight: 600; }
+.ficha--activa .ficha__avatar { border-color: var(--marca); }
+
+/* ---------- Días ---------- */
+.dias { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .3rem; }
+.dia {
+    flex-shrink: 0;
+    width: 58px; padding: .5rem 0;
+    background: var(--tarjeta);
+    border: 1px solid var(--linea);
+    border-radius: 12px;
+    text-align: center; text-decoration: none;
+}
+.dia__semana { display: block; font-size: .66rem; color: var(--suave); text-transform: uppercase; }
+.dia__numero { display: block; font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+.dia__mes    { display: block; font-size: .64rem; color: var(--suave); }
+.dia--activo { background: var(--marca); border-color: var(--marca); color: #fff; }
+.dia--activo .dia__semana, .dia--activo .dia__mes { color: rgba(255,255,255,.85); }
+
+/* ---------- Horas ---------- */
+.franja-titulo {
+    font-size: .74rem; text-transform: uppercase; letter-spacing: .5px;
+    color: var(--suave); margin: 1rem 0 .5rem;
+}
+.horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: .5rem; }
+.hora {
+    width: 100%;
+    padding: .8rem .3rem;
+    background: var(--tarjeta);
+    border: 1px solid var(--linea);
+    border-radius: 10px;
+    font-size: .95rem; font-weight: 600;
+    color: var(--texto);
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+}
+.hora:hover { border-color: var(--marca); color: var(--marca); }
+.hora:active { background: var(--marca); color: #fff; }
+
+.sin-huecos {
+    background: var(--tarjeta); border: 1px solid var(--linea);
+    border-radius: 14px; padding: 1.75rem 1rem; text-align: center;
+}
+.sin-huecos p { color: var(--suave); margin-bottom: 1rem; }
+.sin-huecos__pista { font-size: .85rem; }
+
+.vacio-portal {
+    background: var(--tarjeta); border: 1px solid var(--linea);
+    border-radius: 14px; padding: 2.5rem 1rem; text-align: center;
+}
+.vacio-portal p { color: var(--suave); margin-bottom: 1rem; }
+
+/* ---------- Botones ---------- */
+.boton-portal {
+    display: inline-block;
+    padding: .8rem 1.4rem;
+    background: var(--marca); color: #fff;
+    border: 0; border-radius: 10px;
+    font-size: .95rem; font-weight: 600;
+    text-decoration: none; cursor: pointer;
+    font-family: inherit;
+}
+.boton-portal--grande { width: 100%; padding: 1rem; font-size: 1.05rem; }
+.boton-portal--suave {
+    background: var(--tarjeta); color: var(--texto);
+    border: 1px solid var(--linea);
+}
+
+/* ---------- Resumen de la cita ---------- */
+.resumen-cita {
+    background: var(--tarjeta); border: 1px solid var(--linea);
+    border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem;
+}
+.resumen-cita dl, .tarjeta-cita dl { margin-top: 1rem; }
+.resumen-cita dl > div, .tarjeta-cita dl > div {
+    display: flex; justify-content: space-between; gap: 1rem;
+    padding: .5rem 0; border-bottom: 1px solid var(--linea);
+}
+.resumen-cita dl > div:last-child, .tarjeta-cita dl > div:last-child { border-bottom: 0; }
+.resumen-cita dt, .tarjeta-cita dt { color: var(--suave); font-size: .82rem; }
+.resumen-cita dd, .tarjeta-cita dd { text-align: right; font-size: .9rem; }
+
+/* ---------- Reloj de retención ---------- */
+.reloj {
+    background: #eff6ff; color: #1e40af;
+    padding: .7rem 1rem; border-radius: 10px;
+    font-size: .84rem; text-align: center; margin-bottom: 1.25rem;
+}
+.reloj--poco { background: #fef3c7; color: #92400e; }
+.reloj--caducado { background: #fee2e2; color: #991b1b; }
+
+/* ---------- Formulario ---------- */
+.formulario-portal {
+    background: var(--tarjeta); border: 1px solid var(--linea);
+    border-radius: 14px; padding: 1.25rem;
+}
+.campo-portal { margin-bottom: 1rem; }
+.campo-portal label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: .3rem; }
+.campo-portal input, .campo-portal textarea {
+    width: 100%; padding: .8rem;
+    border: 1px solid var(--linea); border-radius: 10px;
+    font-size: 1rem;      /* 16px o iOS hace zoom al enfocar */
+    font-family: inherit;
+}
+.campo-portal input:focus, .campo-portal textarea:focus {
+    outline: none; border-color: var(--marca);
+}
+.campo-portal small { display: block; color: var(--suave); font-size: .76rem; margin-top: .25rem; }
+
+.casilla-portal {
+    display: flex; gap: .6rem; align-items: flex-start;
+    margin-bottom: .85rem; font-size: .82rem; color: var(--suave);
+}
+.casilla-portal input { margin-top: .2rem; width: 18px; height: 18px; accent-color: var(--marca); flex-shrink: 0; }
+
+/* ---------- Cita confirmada ---------- */
+.tarjeta-cita {
+    background: var(--tarjeta);
+    border: 1px solid var(--linea);
+    border-top: 4px solid var(--marca);
+    border-radius: 14px; padding: 1.5rem; text-align: center;
+}
+.tarjeta-cita--ok    { border-top-color: var(--ok); }
+.tarjeta-cita--aviso { border-top-color: var(--aviso); }
+.tarjeta-cita--error { border-top-color: var(--error); }
+.tarjeta-cita--neutro{ border-top-color: var(--suave); }
+.tarjeta-cita__nota { color: var(--suave); font-size: .88rem; margin-bottom: 1rem; }
+
+.codigo-cita {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 2px;
+    margin: 1rem 0 .2rem;
+}
+.tarjeta-cita > small { color: var(--suave); font-size: .76rem; }
+
+.acciones-cita {
+    display: flex; flex-direction: column; gap: .6rem;
+    margin-top: 1.5rem;
+}
+.acciones-cita form { width: 100%; }
+.acciones-cita .boton-portal { width: 100%; }
+
+/* ---------- Pie ---------- */
+.portal-pie {
+    text-align: center; padding: 2rem 1rem 3rem;
+    color: var(--suave); font-size: .8rem;
+    border-top: 1px solid var(--linea);
+    background: var(--tarjeta);
+}
+.portal-pie p { margin-bottom: .2rem; }
+
+@media (min-width: 640px) {
+    .acciones-cita { flex-direction: row; justify-content: center; }
+    .acciones-cita .boton-portal { width: auto; }
+}

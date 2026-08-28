@@ -1,0 +1,47 @@
+/* ============================================================
+   DIALOGO DE CLAVES
+   ============================================================ */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(2, 6, 23, .7);
+}
+
+/* Sin esto el modal se ve aunque lleve hidden: las clases con display
+   ganan al atributo. Ya nos paso con las citas de la agenda. */
+.modal[hidden] { display: none !important; }
+
+.modal__caja {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 1.75rem;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal__caja h2 {
+    font-size: 1.15rem;
+    margin-bottom: .5rem;
+}
+
+.bloque-claves { margin-top: 1.25rem; }
+
+.separador-claves {
+    border: 0;
+    border-top: 1px solid var(--borde);
+    margin: 1.75rem 0 0;
+}
+
+.modal__pie {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--borde);
+    text-align: right;
+}

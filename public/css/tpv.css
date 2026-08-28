@@ -1,0 +1,319 @@
+/* ============================================================
+   PUNTO DE VENTA
+   Pensado para tablet horizontal de 10" y para PC.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   OJO CON hidden
+   ------------------------------------------------------------
+   El navegador oculta los elementos con [hidden] mediante
+   `display: none`, pero esa regla viene de la hoja del propio
+   navegador y tiene MENOS especificidad que cualquier clase.
+
+   Es decir: `.tpv__citas { display: flex }` gana, y el elemento
+   se ve aunque tenga hidden. Sin ruido, sin error en consola:
+   simplemente el boton «no hace nada».
+
+   Con esta regla, hidden funciona en todo el TPV.
+   ------------------------------------------------------------ */
+[hidden] { display: none !important; }
+
+.tpv {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1rem;
+    align-items: start;
+}
+
+/* ---------- Catálogo ---------- */
+.tpv__catalogo {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.tpv__pestanas {
+    display: flex;
+    border-bottom: 1px solid var(--borde);
+}
+.tpv__pestana {
+    flex: 1; padding: .8rem .5rem;
+    background: transparent; border: 0;
+    border-bottom: 3px solid transparent;
+    color: var(--suave); font-size: .88rem; font-weight: 600;
+    cursor: pointer;
+}
+.tpv__pestana--activa { color: var(--texto); border-bottom-color: var(--marca); }
+.tpv__badge {
+    background: var(--aviso); color: #422006;
+    font-size: .68rem; padding: .05rem .4rem; border-radius: 999px;
+}
+
+.tpv__familias {
+    display: flex; gap: .4rem; flex-wrap: wrap;
+    padding: .7rem;
+    border-bottom: 1px solid var(--borde);
+}
+.tpv__familia {
+    padding: .4rem .8rem;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    color: var(--suave); font-size: .8rem;
+    cursor: pointer;
+}
+.tpv__familia--activa {
+    background: var(--color, var(--marca));
+    border-color: var(--color, var(--marca));
+    color: #fff;
+}
+
+.tpv__rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+    gap: .6rem;
+    padding: .7rem;
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+}
+
+.articulo {
+    position: relative;
+    aspect-ratio: 1;
+    background: color-mix(in srgb, var(--color) 22%, var(--panel2));
+    border: 1px solid color-mix(in srgb, var(--color) 45%, transparent);
+    border-radius: 12px;
+    padding: .5rem;
+    color: var(--texto);
+    cursor: pointer;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    text-align: left;
+    overflow: hidden;
+    transition: transform .1s, filter .1s;
+}
+.articulo:hover { filter: brightness(1.2); }
+.articulo--pulsado { transform: scale(.94); filter: brightness(1.5); }
+.articulo[hidden] { display: none; }   /* cubierto por la regla global */
+
+.articulo__foto {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: .35;
+}
+.articulo__nombre {
+    position: relative; z-index: 2;
+    font-size: .8rem; font-weight: 600; line-height: 1.25;
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.articulo__precio {
+    position: relative; z-index: 2;
+    font-size: .82rem; font-weight: 700; margin-top: .2rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+}
+.articulo__stock {
+    position: absolute; top: .35rem; right: .35rem; z-index: 3;
+    background: var(--error); color: #fff;
+    font-size: .6rem; font-weight: 700;
+    padding: .05rem .35rem; border-radius: 999px;
+}
+
+/* ---------- Citas de hoy ---------- */
+.tpv__citas {
+    padding: .7rem;
+    display: flex; flex-direction: column; gap: .5rem;
+    max-height: calc(100vh - 260px);
+    overflow-y: auto;
+}
+.cita-tpv {
+    display: flex; align-items: center; gap: .8rem;
+    padding: .7rem .9rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 11px; text-decoration: none; color: inherit;
+}
+.cita-tpv:hover { border-color: var(--marca); }
+.cita-tpv__hora { font-weight: 700; font-variant-numeric: tabular-nums; }
+.cita-tpv__datos { flex: 1; min-width: 0; }
+.cita-tpv__datos strong { display: block; font-size: .88rem; }
+.cita-tpv__datos small { color: var(--suave); font-size: .76rem; }
+.cita-tpv__importe { font-weight: 600; }
+
+/* ---------- Ticket ---------- */
+.tpv__ticket {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: .9rem;
+    position: sticky; top: 80px;
+    display: flex; flex-direction: column;
+    max-height: calc(100vh - 110px);
+}
+
+.ticket-cab {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: .5rem; padding-bottom: .7rem;
+    border-bottom: 1px solid var(--borde);
+}
+.ticket-cab strong { display: block; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.ticket-cab small { color: var(--suave); font-size: .76rem; }
+
+.ticket-formacion {
+    background: var(--aviso); color: #422006;
+    font-size: .68rem; font-weight: 700; text-align: center;
+    padding: .35rem; border-radius: 7px; margin-top: .6rem;
+    letter-spacing: .3px;
+}
+
+.ticket-lineas {
+    list-style: none;
+    flex: 1; overflow-y: auto;
+    margin: .5rem 0;
+    min-height: 120px;
+}
+.ticket-linea {
+    display: flex; gap: .5rem; align-items: flex-start;
+    padding: .5rem .25rem;
+    border-bottom: 1px solid var(--panel2);
+    cursor: pointer;
+}
+.ticket-linea:hover { background: var(--panel2); }
+.ticket-linea__texto { flex: 1; min-width: 0; }
+.ticket-linea__texto strong {
+    display: block; font-size: .84rem; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ticket-linea__texto small { color: var(--suave); font-size: .72rem; }
+.ticket-linea__importe { font-weight: 600; font-size: .86rem; font-variant-numeric: tabular-nums; }
+.ticket-linea--invitacion { opacity: .7; }
+.ticket-linea--invitacion .ticket-linea__importe { color: var(--ok); }
+
+.ticket-vacio {
+    text-align: center; color: var(--suave);
+    font-size: .84rem; padding: 2.5rem 1rem;
+}
+
+.ticket-totales { border-top: 1px solid var(--borde); padding-top: .6rem; }
+.ticket-totales__fila {
+    display: flex; justify-content: space-between;
+    font-size: .82rem; color: var(--suave);
+    padding: .15rem 0;
+    font-variant-numeric: tabular-nums;
+}
+.ticket-totales__fila--total {
+    font-size: 1.25rem; font-weight: 700; color: var(--texto);
+    padding-top: .4rem; margin-top: .3rem;
+    border-top: 1px solid var(--borde);
+}
+
+.boton--cobrar {
+    background: var(--ok); color: #04231a;
+    font-size: 1.05rem; padding: .9rem;
+    margin-top: .7rem;
+}
+.boton--cobrar:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Modal de cobro ---------- */
+.modal-cobro {
+    position: fixed; inset: 0; z-index: 70;
+    background: rgba(2,6,23,.88);
+    display: grid; place-items: center; padding: 1rem;
+}
+.modal-cobro[hidden] { display: none; }
+.modal-cobro__caja {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 18px;
+    padding: 1.5rem;
+    width: 100%; max-width: 420px;
+    position: relative;
+}
+.modal-cobro__caja--ok { text-align: center; max-width: 340px; }
+.modal-cobro__cerrar {
+    position: absolute; top: .5rem; right: .8rem;
+    background: none; border: 0; color: var(--suave);
+    font-size: 1.6rem; cursor: pointer; line-height: 1;
+}
+.modal-cobro__importe { text-align: center; margin-bottom: 1.25rem; }
+.modal-cobro__importe small { display: block; color: var(--suave); font-size: .8rem; }
+.modal-cobro__importe strong { font-size: 2.1rem; font-variant-numeric: tabular-nums; }
+.modal-cobro__error {
+    background: rgba(239,68,68,.15); color: #fca5a5;
+    padding: .6rem .8rem; border-radius: 8px;
+    font-size: .84rem; margin: .8rem 0;
+}
+
+.medios { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; margin-bottom: 1rem; }
+.medio {
+    padding: .85rem .5rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 11px; color: var(--texto);
+    font-size: .9rem; font-weight: 600; cursor: pointer;
+}
+.medio--activo { background: var(--marca); border-color: var(--marca); color: #fff; }
+
+#bloqueEfectivo label { display: block; font-size: .78rem; color: var(--suave); margin-bottom: .3rem; }
+#entregado {
+    width: 100%; padding: .8rem;
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 10px; color: var(--texto);
+    font-size: 1.4rem; text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.rapidos { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .6rem; }
+.rapido {
+    flex: 1; min-width: 70px; padding: .55rem .3rem;
+    background: transparent; border: 1px solid var(--borde);
+    border-radius: 9px; color: var(--suave);
+    font-size: .82rem; cursor: pointer;
+}
+.rapido:hover { color: var(--texto); border-color: var(--suave); }
+.cambio {
+    text-align: center; margin-top: .8rem;
+    font-size: .95rem; color: var(--suave);
+}
+.cambio strong { color: var(--ok); font-size: 1.4rem; display: block; margin-top: .2rem; }
+
+.hecho-icono {
+    width: 62px; height: 62px; margin: 0 auto 1rem;
+    border-radius: 50%; background: var(--ok); color: #04231a;
+    display: grid; place-items: center; font-size: 2rem; font-weight: 700;
+}
+.hecho-titulo { font-size: 1.1rem; font-weight: 600; margin-bottom: .5rem; }
+.hecho-cambio { color: var(--ok); font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+
+/* ---------- Aviso flotante ---------- */
+.tpv-nota {
+    position: fixed; bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    background: var(--error); color: #fff;
+    padding: .7rem 1.2rem; border-radius: 10px;
+    font-size: .88rem; z-index: 90;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    max-width: 90vw;
+}
+
+/* ---------- Caja y cierre ---------- */
+.arqueo { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .75rem; }
+.arqueo__dato {
+    background: var(--panel2); border: 1px solid var(--borde);
+    border-radius: 11px; padding: .9rem;
+}
+.arqueo__dato span { display: block; color: var(--suave); font-size: .74rem; }
+.arqueo__dato strong { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.arqueo__dato--destacado { border-color: var(--marca); }
+.arqueo__dato--alerta { border-color: var(--error); }
+.arqueo__dato--alerta strong { color: #fca5a5; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+    .tpv { grid-template-columns: 1fr; }
+    .tpv__ticket { position: static; max-height: none; }
+    .tpv__rejilla { max-height: none; }
+}
+
+@media (max-width: 640px) {
+    .tpv__rejilla { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: .45rem; }
+    .medios { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,153 @@
+/* ============================================================
+   ASISTENTE DE PRIMERA CONFIGURACION
+   ============================================================ */
+
+.asistente {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+.asistente__cabecera { text-align: center; margin-bottom: 2.5rem; }
+.asistente__cabecera h1 {
+    font-size: 1.6rem; font-weight: 700;
+    line-height: 1.25; margin-bottom: .5rem;
+}
+.asistente__cabecera > p { color: var(--suave); font-size: .95rem; }
+
+/* ---------- Pasos ---------- */
+.asistente__pasos {
+    display: flex; justify-content: center;
+    gap: .35rem; flex-wrap: wrap;
+    list-style: none;
+    margin-top: 1.75rem;
+}
+
+.asistente__paso {
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .78rem;
+    color: var(--suave);
+    padding: .35rem .7rem;
+    border-radius: 999px;
+    background: var(--panel2);
+}
+.asistente__paso span {
+    display: grid; place-items: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--borde);
+    font-size: .7rem; font-weight: 700;
+}
+.asistente__paso--activo {
+    background: var(--marca); color: #fff;
+}
+.asistente__paso--activo span { background: rgba(255,255,255,.25); }
+.asistente__paso--hecho { color: var(--ok); }
+.asistente__paso--hecho span { background: var(--ok); color: #04231a; }
+
+/* ---------- Tarjeta ---------- */
+.asistente__tarjeta {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 2rem;
+}
+.asistente__tarjeta h2 {
+    font-size: 1.25rem; font-weight: 700;
+    margin-bottom: .5rem;
+}
+.asistente__ayuda {
+    color: var(--suave);
+    font-size: .9rem;
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
+}
+
+.asistente__tarjeta--final { text-align: center; }
+.asistente__tarjeta--final .asistente__ayuda { text-align: left; }
+
+.icono-final {
+    display: grid; place-items: center;
+    width: 64px; height: 64px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: rgba(16,185,129,.15);
+    color: var(--ok);
+    font-size: 2rem;
+}
+
+.lista-siguiente {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+.lista-siguiente li {
+    position: relative;
+    padding-left: 1.5rem;
+    padding-bottom: .55rem;
+    font-size: .9rem;
+    color: var(--suave);
+}
+.lista-siguiente li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--marca);
+}
+
+/* ---------- Dias de la semana ---------- */
+.dias-semana {
+    display: flex; gap: .4rem; flex-wrap: wrap;
+    margin-top: .4rem;
+}
+
+.dia-casilla { cursor: pointer; }
+.dia-casilla input { position: absolute; opacity: 0; }
+.dia-casilla span {
+    display: block;
+    padding: .5rem .8rem;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-size: .84rem;
+    transition: .12s;
+}
+.dia-casilla input:checked + span {
+    background: var(--marca);
+    border-color: var(--marca);
+    color: #fff;
+}
+
+/* ---------- Servicios ---------- */
+.fila-servicio {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+.fila-servicio input {
+    padding: .65rem .75rem;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    color: var(--texto);
+    font-size: .9rem;
+    font-family: inherit;
+}
+
+/* ---------- Saltar ---------- */
+.asistente__saltar { text-align: center; margin-top: 1.5rem; }
+.asistente__saltar button {
+    background: none; border: 0;
+    color: var(--suave);
+    font-size: .84rem;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: inherit;
+}
+.asistente__saltar button:hover { color: var(--texto); }
+
+@media (max-width: 560px) {
+    .asistente__tarjeta { padding: 1.5rem 1.25rem; }
+    .fila-servicio { grid-template-columns: 1fr 1fr; }
+    .fila-servicio input:first-child { grid-column: span 2; }
+}
