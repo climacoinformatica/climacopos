@@ -1,0 +1,81 @@
+/* ============================================================
+   BARRA DE CAJA EN EL TPV
+   ============================================================ */
+
+.tpv-caja {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .4rem;
+    margin-top: .6rem;
+    padding-top: .6rem;
+    border-top: 1px solid var(--borde);
+}
+
+/* Con un solo boton, que no ocupe un tercio */
+.tpv-caja:has(> :only-child) { grid-template-columns: 1fr; }
+
+.tpv-caja__boton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .2rem;
+
+    width: 100%;
+    min-height: 52px;
+    padding: .4rem;
+
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+
+    color: var(--suave);
+    font-size: .72rem;
+    font-family: inherit;
+    text-decoration: none;
+    text-align: center;
+
+    cursor: pointer;
+    transition: .12s;
+}
+.tpv-caja__boton:hover {
+    border-color: var(--marca);
+    color: var(--texto);
+}
+.tpv-caja__boton:active { transform: scale(.97); }
+
+.tpv-caja__icono { font-size: 1.1rem; line-height: 1; }
+
+/* Los formularios no deben romper la rejilla */
+.tpv-caja form { display: contents; }
+
+/* ============================================================
+   APERTURA DE JORNADA
+   ============================================================ */
+
+.apertura__texto {
+    color: var(--suave);
+    font-size: .92rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.apertura__importe {
+    font-size: 2rem !important;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding: .7rem !important;
+}
+
+.apertura__pista {
+    color: var(--suave);
+    font-size: .78rem;
+    line-height: 1.5;
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+@media (max-width: 560px) {
+    .tpv-caja { grid-template-columns: repeat(3, 1fr); }
+    .tpv-caja__boton { min-height: 46px; font-size: .68rem; }
+}

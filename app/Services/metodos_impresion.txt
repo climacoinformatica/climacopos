@@ -1,0 +1,83 @@
+Este metodo entra en GestorImpresion, junto a cierre():
+
+    /**
+     * Informe X por la impresora de tickets.
+     *
+     * Sale mas corto que el cierre a proposito: es un vistazo rapido a
+     * media tarde, no un documento para archivar.
+     */
+    public function informeX(array $datos, ?Terminal $terminal = null): ?ColaImpresion
+    {
+        $terminal ??= SesionSalon::terminal();
+
+        if (! $terminal) {
+            return null;
+        }
+
+        return $this->encolar($terminal, 'INFORME_X', 'TICKETS',
+            $this->constructor->informeX($datos),
+            'Informe X de las ' . now()->format('H:i'),
+        );
+    }
+
+
+Y este en ConstructorTicket, junto a cierre():
+
+    /**
+     * Informe X para la impresora.
+     *
+     * Lleva bien claro que NO cierra nada: alguien podria guardarlo
+     * pensando que ya cerro el dia, y al dia siguiente encontrarse las
+     * ventas de ayer sin cerrar.
+     */
+    public function informeX(array $datos): string
+    {
+        $d = $this->diseno;
+        $esc = new EscPos($d->columnas);
+
+        $esc->inicializar()->centrar()->negrita(true)->tamano(1, 2)
+            ->linea('INFORME X')
+            ->tamano(1, 1)->negrita(false)
+            ->linea(tenant('nombre_comercial'))
+            ->linea($datos['momento']->format('d/m/Y H:i'))
+            ->saltos(1);
+
+        $esc->invertido(true)
+            ->linea(' NO CIERRA LA JORNADA ')
+            ->invertido(false)
+            ->saltos(1)->izquierda()->separador();
+
+        $esc->fila('Desde', $datos['desde']->format('d/m H:i'));
+        $esc->fila('Tickets', (string) $datos['num_tickets']);
+        $esc->negrita(true)
+            ->fila('VENDIDO', $this->euros((float) $datos['total_ventas']))
+            ->negrita(false);
+        $esc->separador();
+
+        $esc->negrita(true)->linea('COMO HAN PAGADO')->negrita(false);
+
+        foreach ($datos['por_medio'] ?? [] as $medio => $importe) {
+            $esc->fila(ucfirst(strtolower($medio)), $this->euros((float) $importe));
+        }
+
+        $esc->separador();
+        $esc->negrita(true)->linea('EFECTIVO')->negrita(false);
+        $esc->fila('Fondo inicial', $this->euros((float) $datos['efectivo_inicial']));
+        $esc->negrita(true)
+            ->fila('DEBERIA HABER', $this->euros((float) $datos['efectivo_teorico']))
+            ->negrita(false);
+
+        if (! empty($datos['por_profesional'])) {
+            $esc->separador()->negrita(true)->linea('POR PROFESIONAL')->negrita(false);
+
+            foreach ($datos['por_profesional'] as $nombre => $importe) {
+                $esc->fila($nombre, $this->euros((float) $importe));
+            }
+        }
+
+        $esc->separador()->saltos(1)->centrar()
+            ->linea('Solo informativo.')
+            ->linea('La jornada sigue abierta.');
+
+        return $esc->saltos($d->lineas_finales)->cortar()->salida();
+    }

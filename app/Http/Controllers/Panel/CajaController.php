@@ -216,4 +216,35 @@ class CajaController extends Controller
 
         return back()->with('exito', "Se han borrado {$cuantos} documento(s) de formación.");
     }
+
+    // ------------------------------------------------------------------
+    //  Informe X
+    // ------------------------------------------------------------------
+
+    /**
+     * Como va el dia SIN cerrar nada.
+     *
+     * Se mira a media tarde. A diferencia del cierre, no marca ningun
+     * ticket ni impide seguir vendiendo: es solo una foto.
+     */
+    public function informeX()
+    {
+        return view('panel.caja.informe-x', [
+            'datos' => $this->gestor->informeX(),
+        ]);
+    }
+
+    /** Saca el informe X por la impresora de tickets. */
+    public function informeXImprimir()
+    {
+        try {
+            (new \App\Services\GestorImpresion())->informeX($this->gestor->informeX());
+        } catch (\Throwable $e) {
+            return back()->with('error',
+                'No se ha podido enviar a la impresora. Comprueba que el '
+                . 'conector esta funcionando en este equipo.');
+        }
+
+        return back()->with('exito', 'Informe enviado a la impresora.');
+    }
 }

@@ -36,6 +36,15 @@ class Permisos
     public const TPV_DEVOLUCION    = 'tpv.devolucion';
     public const TPV_ABRIR_CAJON   = 'tpv.abrir_cajon';
 
+    /**
+     * Consultar e imprimir los informes X y Z desde el propio TPV.
+     *
+     * Va aparte de CAJA_CIERRE a proposito: leer el arqueo no cierra
+     * nada y no puede exigir contrasena, o quien esta en el mostrador
+     * dejaria de mirarlo. Cerrar la jornada sigue pidiendo CAJA_CIERRE.
+     */
+    public const TPV_INFORMES_CAJA = 'tpv.informes_caja';
+
     // --- Caja
     public const CAJA_ENTRADAS_SALIDAS = 'caja.entradas_salidas';
     public const CAJA_CIERRE           = 'caja.cierre';
@@ -103,6 +112,7 @@ class Permisos
                 self::TPV_ANULAR_TICKET => 'Anular tickets completos',
                 self::TPV_DEVOLUCION    => 'Hacer devoluciones',
                 self::TPV_ABRIR_CAJON   => 'Abrir el cajon sin venta',
+                self::TPV_INFORMES_CAJA => 'Ver e imprimir los informes X y Z desde el TPV',
             ],
             'Caja' => [
                 self::CAJA_ENTRADAS_SALIDAS => 'Registrar entradas y salidas de efectivo',
@@ -176,6 +186,7 @@ class Permisos
                     self::TPV_ANULAR_TICKET,
                     self::TPV_DEVOLUCION,
                     self::TPV_ABRIR_CAJON,
+                    self::TPV_INFORMES_CAJA,
                     self::CAJA_ENTRADAS_SALIDAS,
                     self::CAJA_CIERRE,
                     self::AGENDA_VER_TODAS,
@@ -205,6 +216,7 @@ class Permisos
                     self::TPV_DESCUENTO,
                     self::TPV_ANULAR_LINEA,
                     self::TPV_ABRIR_CAJON,
+                    self::TPV_INFORMES_CAJA,
                     self::AGENDA_VER_TODAS,
                     self::AGENDA_EDITAR_OTROS,
                     self::RESERVAS_CONFIRMAR,

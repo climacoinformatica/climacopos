@@ -12,6 +12,7 @@ use App\Models\TicketCobro;
 use App\Models\TicketLinea;
 use App\Services\GestorTickets;
 use App\Support\Permisos;
+use App\Services\GestorCierre;
 use App\Support\SesionSalon;
 use Illuminate\Http\Request;
 
@@ -56,7 +57,66 @@ class TpvController extends Controller
                             ->whereDoesntHave('ticket')
                             ->orderBy('hora_ini')
                             ->get(),
+
+            /**
+             * Si la jornada esta sin abrir, el TPV lo pregunta.
+             *
+             * Antes habia que ir a Caja y registrar un movimiento de tipo
+             * «Apertura», cosa que nadie descubre solo. El fondo de caja
+             * se cuenta al empezar el dia, asi que la pregunta va donde
+             * empieza el dia.
+             */
+            'sinAbrir'  => ! (new GestorCierre())->jornadaAbierta(),
         ]);
+    }
+
+    /**
+     * Abre el cajon portamonedas.
+     *
+     * Sin permiso especial: hace falta para dar cambio de algo que no es
+     * una venta, y exigir el permiso de cierre obligaria a llamar al
+     * encargado cada vez.
+     *
+     * Queda registrado en auditoria: un cajon que se abre sin venta es
+     * justo lo que conviene poder revisar despues si las cuentas no
+     * cuadran.
+     */
+    public function abrirCajon()
+    {
+        try {
+            (new \App\Services\GestorImpresion())->abrirCajon();
+        } catch (\Throwable $e) {
+            return back()->with('error',
+                'No se ha podido abrir el cajon. Comprueba que el conector '
+                . 'esta funcionando en este equipo.');
+        }
+
+        \App\Models\Auditoria::registrar('cajon_abierto', 'terminales',
+            SesionSalon::terminal()?->id);
+
+        return back();
+    }
+
+    /**
+     * Fondo de caja del dia.
+     *
+     * Se puede empezar sin contar: bloquear el TPV porque nadie ha
+     * contado el cajon seria peor que el problema que resuelve. Con cero
+     * el arqueo saldra descuadrado, y eso ya avisa por si solo.
+     */
+    public function abrirJornada(Request $peticion)
+    {
+        $datos = $peticion->validate([
+            'fondo' => ['nullable', 'numeric', 'min:0', 'max:99999'],
+        ]);
+
+        (new GestorCierre())->abrirJornada(
+            SesionSalon::usuario(),
+            (float) ($datos['fondo'] ?? 0),
+        );
+
+        return redirect()->route('panel.tpv')
+            ->with('exito', 'Jornada iniciada. Buen dia.');
     }
 
     public function anadir(Request $peticion, Ticket $ticket)

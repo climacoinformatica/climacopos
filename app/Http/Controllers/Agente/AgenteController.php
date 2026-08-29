@@ -64,7 +64,21 @@ class AgenteController extends Controller
     {
         $terminal = $peticion->attributes->get('terminal');
 
-        abort_unless($trabajo->terminal_id === $terminal->id, 403);
+        /**
+         * Comparacion con == y no ===.
+         *
+         * El id del terminal puede llegar como entero desde la base y
+         * como cadena desde la ruta, segun por donde pase. Con === eso
+         * falla aunque sean el mismo numero, y el agente recibe un 403
+         * que interpreta como «token invalido».
+         *
+         * El sintoma era desconcertante: el conector RECOGIA los trabajos
+         * sin problema, los imprimia, y solo fallaba al confirmarlos. Y
+         * como el servidor reencola a los dos minutos lo que nadie
+         * confirma, el mismo cierre salia una y otra vez.
+         */
+        abort_unless((int) $trabajo->terminal_id === (int) $terminal->id, 403,
+            'Ese trabajo es de otro terminal.');
 
         $datos = $peticion->validate([
             'ok'    => ['required', 'boolean'],

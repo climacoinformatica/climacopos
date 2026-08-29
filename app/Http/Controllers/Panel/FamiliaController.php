@@ -35,8 +35,24 @@ class FamiliaController extends Controller
         ]);
     }
 
-    public function guardar(Request $peticion, ?Familia $familia = null, GestorImagenes $imagenes = new GestorImagenes())
+    public function guardar(Request $peticion, ?Familia $familia = null)
     {
+        /**
+         * El gestor se crea aqui, no como argumento del metodo.
+         *
+         * Iba como tercer parametro con valor por defecto, y Laravel le
+         * pasaba `null` explicitamente al resolver los parametros de
+         * ruta: un valor por defecto no cubre eso, porque el argumento SI
+         * llega, solo que vacio.
+         *
+         * El sintoma era un error 500 al subir la imagen de una familia,
+         * y solo al subir imagen: sin fichero adjunto nunca se llegaba a
+         * usar el gestor y todo parecia funcionar.
+         *
+         * ArticuloController ya lo hacia asi.
+         */
+        $imagenes = new GestorImagenes();
+
         $datos = $peticion->validate([
             'nombre'           => ['required', 'string', 'max:80'],
             'tipo'             => ['required', 'in:SERVICIO,PRODUCTO,AMBOS'],

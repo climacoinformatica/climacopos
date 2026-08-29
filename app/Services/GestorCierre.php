@@ -176,6 +176,47 @@ class GestorCierre
         return $cierre;
     }
 
+    /**
+     * ¿Hay jornada abierta?
+     *
+     * Se mira si hay un movimiento de APERTURA sin cerrar. Es lo que
+     * marca el comienzo del dia: sin el, el arqueo no tiene fondo
+     * inicial contra el que cuadrar.
+     */
+    public function jornadaAbierta(): bool
+    {
+        return CajaMovimiento::sinCerrar()->where('tipo', 'APERTURA')->exists();
+    }
+
+    /**
+     * Abre la jornada con el fondo contado.
+     *
+     * Se admite cero: bloquear el TPV porque nadie ha contado el cajon
+     * seria peor que el problema. Con cero el arqueo saldra descuadrado
+     * al cerrar, y eso ya avisa por si solo.
+     */
+    public function abrirJornada(Usuario $usuario, float $fondo): CajaMovimiento
+    {
+        return $this->movimiento('APERTURA', $fondo,
+            $fondo > 0 ? 'Fondo de caja' : 'Apertura sin contar',
+            $usuario);
+    }
+
+    /**
+     * Informe X: como va el dia SIN cerrar nada.
+     *
+     * Es el que se mira a media tarde. A diferencia del cierre, no marca
+     * ningun ticket ni impide seguir vendiendo: es solo una foto.
+     */
+    public function informeX(): array
+    {
+        $resumen = $this->resumen();
+
+        $resumen['momento'] = now();
+
+        return $resumen;
+    }
+
     public function movimiento(string $tipo, float $importe, string $motivo, Usuario $usuario): CajaMovimiento
     {
         $movimiento = CajaMovimiento::create([
