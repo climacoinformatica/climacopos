@@ -116,6 +116,14 @@
         --}}
         <a href="{{ route('panel.produccion') }}" @class(['activo' => request()->routeIs('panel.produccion*')])>Producción</a>
 
+        {{--
+            Facturas: el listado que pide la gestoria cada trimestre, en
+            PDF y con desglose por tipo de impuesto.
+        --}}
+        @if ($usuarioSalon->tienePermiso($permisos::INFORMES_VER))
+            <a href="{{ route('panel.documentos.facturas') }}" @class(['activo' => request()->routeIs('panel.documentos.*')])>Facturas</a>
+        @endif
+
         @if ($usuarioSalon->tienePermiso($permisos::EMPRESA_FACTURACION))
             <a href="{{ route('panel.suscripcion') }}" @class(['activo' => request()->routeIs('panel.suscripcion*')])>Suscripción</a>
         @endif
