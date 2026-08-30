@@ -21,8 +21,16 @@ use RuntimeException;
  */
 class GestorLogotipo
 {
-    /** El que se usa cuando el salon no ha subido el suyo. */
-    public const POR_DEFECTO = 'img/logo-climacopos.png';
+    /**
+     * El que se usa cuando el salon no ha subido el suyo.
+     *
+     * OJO AL NOMBRE DEL FICHERO. nginx sirve /img con `expires 30d`, asi
+     * que sustituir el PNG manteniendo el nombre no sirve de nada: los
+     * navegadores siguen dando el viejo durante un mes. Al cambiar la
+     * marca hay que cambiar tambien el nombre, que es lo unico que
+     * garantiza que se descargue el nuevo.
+     */
+    public const POR_DEFECTO = 'img/logo-climacopos-bn.png';
 
     /**
      * Alto al que se guarda.

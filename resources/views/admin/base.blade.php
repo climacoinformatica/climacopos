@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('titulo', 'Administración') · CLIMACO POS</title>
-    <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v=11">
-    <link rel="stylesheet" href="{{ asset('css/informes.css') }}?v=11">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=11">
+    <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v=45">
+    <link rel="stylesheet" href="{{ asset('css/informes.css') }}?v=45">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=45">
 </head>
 <body>
 
@@ -19,6 +19,7 @@
 
     <nav class="cabecera__nav">
         <a href="{{ route('admin.inicio') }}" @class(['activo' => request()->routeIs('admin.inicio')])>Empresas</a>
+        <a href="{{ route('admin.planes') }}" @class(['activo' => request()->routeIs('admin.planes*')])>Planes</a>
         <a href="{{ route('admin.ajustes.pagos') }}" @class(['activo' => request()->routeIs('admin.ajustes.*')])>Pagos</a>
         <a href="{{ route('admin.correo') }}" @class(['activo' => request()->routeIs('admin.correo*')])>Correo</a>
     </nav>

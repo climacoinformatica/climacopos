@@ -6,20 +6,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('titulo', 'Panel') · {{ tenant('nombre_comercial') }}</title>
 
-    <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/agenda.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/avisos.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/planes.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/bonos.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/clientes-tpv.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/clientes.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/fichajes.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/ausencias.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/teclado.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/logotipo.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/produccion.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/tpv.css') }}?v=25">
-    <link rel="stylesheet" href="{{ asset('css/tpv-caja.css') }}?v=26">
+    <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/agenda.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/avisos.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/planes.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/bonos.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/clientes-tpv.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/clientes.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/fichajes.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/ausencias.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/teclado.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/logotipo.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/produccion.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/limites.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/tpv-caja.css') }}?v=41">
+    <link rel="stylesheet" href="{{ asset('css/tpv.css') }}?v=41">
 </head>
 <body data-teclado-tactil="{{ optional(\App\Support\SesionSalon::terminal())->ajuste('teclado_tactil', 'auto') ?: 'auto' }}">
 
@@ -70,6 +71,14 @@
 @if ($usuarioSalon->en_formacion)
     <div class="banda-formacion">MODO FORMACIÓN · solo cobros en efectivo</div>
 @endif
+
+{{--
+    Aviso del limite de facturas.
+
+    Va en el layout y no solo en Suscripcion: si apareciera unicamente
+    alli, nadie lo veria hasta que fuera tarde.
+--}}
+@include('panel.aviso_facturas')
 
 <header class="cabecera">
     <a href="{{ route('panel.inicio') }}" class="cabecera__marca">

@@ -23,6 +23,18 @@ class Producto extends Model
         ];
     }
 
+    /**
+     * Los planes de suscripcion de este producto.
+     *
+     * Cada producto tiene los suyos: hoy coinciden en precio, pero el dia
+     * que se suba el de restaurantes sin tocar peluquerias, agradeceremos
+     * tenerlos separados.
+     */
+    public function planes()
+    {
+        return $this->hasMany(Plan::class)->orderBy('orden');
+    }
+
     public function versiones()
     {
         return $this->hasMany(ProductoVersion::class)->orderByDesc('publicada_el');

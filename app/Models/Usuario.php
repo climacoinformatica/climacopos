@@ -56,6 +56,7 @@ class Usuario extends Authenticatable
             'pin'                 => 'hashed',
             'es_profesional'      => 'boolean',
             'en_formacion'        => 'boolean',
+            'ficha_jornada'       => 'boolean',
             'ultimo_acceso'       => 'datetime',
             'pin_bloqueado_hasta' => 'datetime',
             'comision_pct'        => 'decimal:2',

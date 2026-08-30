@@ -19,6 +19,7 @@ class Cliente extends Authenticatable
     protected function casts(): array
     {
         return [
+            'fecha_alta'           => 'datetime',
             'fecha_nac'            => 'date',
             'fecha_consentimiento' => 'datetime',
             'ultima_visita'        => 'datetime',

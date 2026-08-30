@@ -8,7 +8,8 @@
     </p>
 
     <div class="logo-actual">
-        <img src="{{ logo_salon() }}" alt="Logotipo" class="logo-actual__imagen">
+        <img src="{{ logo_salon() }}" alt="Logotipo"
+             @class(['logo-actual__imagen', 'logo-actual__imagen--propio' => logo_es_propio()])>
 
         <div class="logo-actual__pie">
             @if (logo_es_propio())

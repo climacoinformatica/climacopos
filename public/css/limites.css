@@ -1,0 +1,31 @@
+/* ============================================================
+   AVISO DE LIMITE DE FACTURAS
+   ============================================================ */
+
+.banda-facturas {
+    background: rgba(245, 158, 11, .15);
+    border-bottom: 1px solid rgba(245, 158, 11, .35);
+    color: #fcd34d;
+
+    padding: .6rem 1rem;
+    font-size: .85rem;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.banda-facturas--grave {
+    background: rgba(239, 68, 68, .15);
+    border-bottom-color: rgba(239, 68, 68, .35);
+    color: #fca5a5;
+}
+
+.banda-facturas a {
+    color: inherit;
+    text-decoration: underline;
+    margin-left: .5rem;
+    white-space: nowrap;
+}
+
+@media print {
+    .banda-facturas { display: none !important; }
+}

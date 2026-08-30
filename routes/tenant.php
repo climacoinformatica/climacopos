@@ -113,9 +113,42 @@ Route::middleware([
             Route::get('selector', [SelectorController::class, 'mostrar'])->name('selector');
             Route::post('selector', [SelectorController::class, 'entrar'])->name('selector.entrar');
 
-            Route::middleware(['salon', 'suscripcion'])->group(function () {
+            /**
+             * Fichar la salida desde el propio selector.
+             *
+             * Pide PIN igual que entrar: el fichaje es un registro laboral
+             * y cualquiera que pase por el mostrador no puede cerrarle la
+             * jornada a otro.
+             *
+             * Va FUERA del grupo con middleware `salon` porque no hay
+             * sesion iniciada: se ficha y se vuelve al selector, sin
+             * entrar al panel.
+             */
+            Route::post('selector/salida', [SelectorController::class, 'marcarSalida'])
+                ->name('selector.salida');
+
+            /**
+             * El orden importa.
+             *
+             * `facturas` va DESPUES de `salon` porque necesita saber que
+             * empresa es para consultar su plan, y despues de
+             * `suscripcion` porque un salon con la cuenta suspendida ya
+             * esta bloqueado por otra via mas prioritaria.
+             */
+            Route::middleware(['salon', 'suscripcion', 'facturas'])->group(function () {
 
                 Route::post('salir', [SelectorController::class, 'salir'])->name('salir');
+
+                /**
+                 * Preguntar por el fichaje de entrada al iniciar sesion.
+                 *
+                 * Estas SI van dentro del grupo con sesion: para fichar la
+                 * entrada ya se ha identificado con su PIN.
+                 */
+                Route::get('fichaje-entrada', [SelectorController::class, 'preguntarEntrada'])
+                    ->name('fichaje.entrada');
+                Route::post('fichaje-entrada', [SelectorController::class, 'registrarEntrada'])
+                    ->name('fichaje.entrada.registrar');
 
                 // ---- Suscripción del salón
                 Route::get('suscripcion', [SuscripcionController::class, 'index'])

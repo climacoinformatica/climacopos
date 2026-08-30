@@ -1,0 +1,63 @@
+/* ============================================================
+   CATALOGO: VISTA PREVIA DE IMAGEN
+   Fichas de familia y de articulo.
+   ============================================================ */
+
+/*
+ * El damero de fondo no es decorativo: deja ver si el PNG tiene
+ * transparencia de verdad o si trae un fondo blanco pegado. Es el
+ * mismo recurso que usa la pantalla del logotipo.
+ */
+.vista-imagen {
+    display: grid;
+    place-items: center;
+
+    min-height: 132px;
+    margin-bottom: .7rem;
+    padding: .8rem;
+
+    background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%)
+                50% / 16px 16px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+}
+
+.vista-imagen img {
+    max-height: 160px;
+    max-width: 100%;
+
+    /* Entera y sin recortar, igual que en el TPV */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.vista-imagen__vacio {
+    color: var(--suave);
+    font-size: .86rem;
+    font-style: italic;
+}
+
+/* ============================================================
+   ACCIONES POR FILA EN TABLAS
+   Listado de facturas, y cualquier tabla que las necesite.
+   ============================================================ */
+
+/*
+ * .acciones-fila ya existe en fichajes.css, pero esa hoja no se
+ * carga en la pantalla de facturas. Se repite aqui en vez de
+ * enlazar fichajes.css entero, que traeria estilos que no pintan
+ * nada en esta pantalla.
+ */
+.acciones-fila {
+    display: flex;
+    gap: .3rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.boton--mini {
+    padding: .3rem .6rem;
+    font-size: .76rem;
+    border-radius: 7px;
+    white-space: nowrap;
+}

@@ -101,6 +101,86 @@ class LimitesPlan
         }
     }
 
+    // ------------------------------------------------------------------
+    //  Facturas al mes
+    // ------------------------------------------------------------------
+
+    /**
+     * Documentos emitidos este mes.
+     *
+     * Los de formacion no cuentan: quedan fuera solos por el global
+     * scope, y ademas no tienen valor fiscal.
+     */
+    public static function facturasDelMes(): int
+    {
+        return \App\Models\Ticket::where('estado', 'COBRADO')
+            ->whereBetween('fecha', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+    }
+
+    /** Cuantas quedan. Null si el plan no limita. */
+    public static function facturasDisponibles(): ?int
+    {
+        $maximo = self::maximo('max_facturas_mes');
+
+        if ($maximo === null) {
+            return null;
+        }
+
+        return max(0, $maximo - self::facturasDelMes());
+    }
+
+    /**
+     * ¿Se ha alcanzado el limite?
+     *
+     * IMPORTANTE: esto NO impide facturar.
+     *
+     * Bloquear el cobro dejaria al salon sin poder atender a una clienta
+     * que ya esta delante, y sin ticket que darle. Eso es un problema
+     * fiscal para el, no solo comercial.
+     *
+     * Lo que se bloquea es el PANEL —agenda, informes, catalogo— hasta
+     * que amplie el plan. El programa deja de ser comodo, pero nunca
+     * impide cobrar.
+     */
+    public static function facturasAgotadas(): bool
+    {
+        $quedan = self::facturasDisponibles();
+
+        return $quedan !== null && $quedan <= 0;
+    }
+
+    /**
+     * Aviso cuando quedan pocas.
+     *
+     * Dos avisos: uno al 80 por ciento y otro al 95. Da tiempo a
+     * reaccionar antes de quedarse sin margen, en lugar de encontrarse el
+     * panel bloqueado un lunes por la manana.
+     */
+    public static function avisoFacturas(): ?array
+    {
+        $maximo = self::maximo('max_facturas_mes');
+
+        if ($maximo === null) {
+            return null;
+        }
+
+        $usadas = self::facturasDelMes();
+        $porcentaje = $maximo > 0 ? ($usadas / $maximo) * 100 : 0;
+
+        if ($porcentaje < 80) {
+            return null;
+        }
+
+        return [
+            'usadas'  => $usadas,
+            'maximo'  => $maximo,
+            'quedan'  => max(0, $maximo - $usadas),
+            'grave'   => $porcentaje >= 95,
+            'agotado' => $usadas >= $maximo,
+        ];
+    }
+
     /** Resumen para la pantalla de suscripción. */
     public static function resumen(): array
     {
@@ -112,6 +192,8 @@ class LimitesPlan
             'profesionales_max' => self::maximo('max_profesionales'),
             'terminales'        => Terminal::where('activo', true)->count(),
             'terminales_max'    => self::maximo('max_terminales'),
+            'facturas'          => self::facturasDelMes(),
+            'facturas_max'      => self::maximo('max_facturas_mes'),
             'reservas_online'   => self::incluye('reservas_online'),
             'pagos_online'      => self::incluye('pagos_online'),
             'verifactu'         => self::incluye('verifactu'),

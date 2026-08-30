@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Models\CierreJornada;
 use App\Models\Ticket;
+use App\Models\Usuario;
+use App\Services\GeneradorInformes;
 use App\Services\GeneradorPdf;
 use App\Support\Permisos;
 use App\Support\SesionSalon;
@@ -160,6 +162,192 @@ class DocumentosController extends Controller
             ? back()->with('exito', 'Enviado a ' . $peticion->input('email'))
             : back()->with('error',
                 'No se ha podido enviar. Comprueba la configuracion de correo.');
+    }
+
+    // ------------------------------------------------------------------
+    // Informe de profesionales
+    // ------------------------------------------------------------------
+
+    public function profesionalesPdf(Request $peticion)
+    {
+        [$datos, $desde, $hasta] = $this->datosProfesionales($peticion);
+
+        $contenido = $this->pdf->desdeVista('pdf.profesionales', $datos);
+
+        return response($contenido, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'
+                . $this->pdf->nombre('profesionales', $desde, $hasta) . '"',
+        ]);
+    }
+
+    public function profesionalesEnviar(Request $peticion)
+    {
+        $peticion->validate(['email' => ['required', 'email']]);
+
+        [$datos, $desde, $hasta] = $this->datosProfesionales($peticion);
+
+        $contenido = $this->pdf->desdeVista('pdf.profesionales', $datos);
+
+        $enviado = $this->enviarPdf(
+            $peticion->input('email'),
+            'Informe de profesionales · ' . $desde->format('d/m/Y') . ' a ' . $hasta->format('d/m/Y'),
+            'correo.plataforma.documento',
+            [
+                'titulo'      => 'Informe de profesionales',
+                'descripcion' => 'del ' . $desde->format('d/m/Y') . ' al ' . $hasta->format('d/m/Y'),
+            ],
+            $contenido,
+            $this->pdf->nombre('profesionales', $desde, $hasta),
+        );
+
+        return $enviado
+            ? back()->with('exito', 'Enviado a ' . $peticion->input('email'))
+            : back()->with('error',
+                'No se ha podido enviar. Comprueba la configuracion de correo.');
+    }
+
+    /**
+     * Datos del informe, comunes al PDF y al correo.
+     *
+     * Repite la regla de permisos de InformesController: quien solo
+     * tiene informes.ver_propios no puede sacar en PDF lo que no puede
+     * ver en pantalla, aunque manipule la direccion.
+     */
+    protected function datosProfesionales(Request $peticion): array
+    {
+        $usuario = SesionSalon::usuario();
+
+        abort_unless(
+            $usuario->tienePermiso(Permisos::INFORMES_VER)
+            || $usuario->tienePermiso(Permisos::INFORMES_VER_PROPIOS),
+            403,
+        );
+
+        $soloPropios = ! $usuario->tienePermiso(Permisos::INFORMES_VER);
+
+        $usuarioId = $soloPropios
+            ? $usuario->id
+            : ($peticion->integer('usuario_id') ?: null);
+
+        [$desde, $hasta] = $this->rango($peticion);
+
+        $nombre = $usuarioId
+            ? Usuario::find($usuarioId)?->nombre
+            : null;
+
+        return [
+            [
+                'profesionales' => GeneradorInformes::entre($desde, $hasta)
+                                      ->porProfesional($usuarioId),
+                'profesional'   => $nombre,
+                'desde'         => $desde,
+                'hasta'         => $hasta,
+            ],
+            $desde,
+            $hasta,
+        ];
+    }
+
+    // ------------------------------------------------------------------
+    // Una factura suelta
+    // ------------------------------------------------------------------
+
+    /** PDF de un documento concreto. */
+    public function facturaPdf(Ticket $ticket)
+    {
+        abort_unless(
+            SesionSalon::usuario()->tienePermiso(Permisos::INFORMES_VER),
+            403,
+        );
+
+        $contenido = $this->pdf->desdeVista('pdf.factura', $this->datosFactura($ticket));
+
+        return response($contenido, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="factura-'
+                . $ticket->referencia() . '.pdf"',
+        ]);
+    }
+
+    /**
+     * Envia una factura por correo.
+     *
+     * Si no se indica destinatario se usa el del cliente del ticket, que
+     * es lo habitual: se busca la factura de una clienta concreta para
+     * mandarsela a ella.
+     */
+    public function facturaEnviar(Request $peticion, Ticket $ticket)
+    {
+        abort_unless(
+            SesionSalon::usuario()->tienePermiso(Permisos::INFORMES_VER),
+            403,
+        );
+
+        $peticion->validate(['email' => ['nullable', 'email']]);
+
+        $destino = $peticion->input('email') ?: $ticket->cliente?->email;
+
+        if (blank($destino)) {
+            return back()->with('error',
+                'No hay a quien enviarla: el ticket no tiene cliente con correo. '
+                . 'Escribe una direccion.');
+        }
+
+        $contenido = $this->pdf->desdeVista('pdf.factura', $this->datosFactura($ticket));
+
+        $enviado = $this->enviarPdf(
+            $destino,
+            'Tu factura ' . $ticket->referencia(),
+            'correo.plataforma.documento',
+            [
+                'titulo'      => 'Factura ' . $ticket->referencia(),
+                'descripcion' => 'del ' . $ticket->fecha->format('d/m/Y'),
+            ],
+            $contenido,
+            'factura-' . $ticket->referencia() . '.pdf',
+        );
+
+        return $enviado
+            ? back()->with('exito', 'Factura enviada a ' . $destino)
+            : back()->with('error',
+                'No se ha podido enviar. Comprueba la configuracion de correo.');
+    }
+
+    /**
+     * Datos de una factura, para la plantilla.
+     *
+     * El desglose por tipo se calcula igual que en el listado, pero de un
+     * solo ticket: una factura tiene que llevarlo aunque solo haya un
+     * tipo, o no sirve para deducirse el gasto.
+     */
+    protected function datosFactura(Ticket $ticket): array
+    {
+        $ticket->load(['cliente', 'lineas', 'cobros']);
+
+        $porImpuesto = [];
+
+        foreach ($ticket->lineas as $linea) {
+            $tipo = (string) (float) ($linea->impuesto_pct ?? 0);
+
+            $porImpuesto[$tipo] ??= ['base' => 0.0, 'cuota' => 0.0];
+
+            $base = (float) $linea->importe / (1 + (float) $linea->impuesto_pct / 100);
+
+            $porImpuesto[$tipo]['base']  += $base;
+            $porImpuesto[$tipo]['cuota'] += (float) $linea->importe - $base;
+        }
+
+        foreach ($porImpuesto as $tipo => $importes) {
+            $porImpuesto[$tipo] = [
+                'base'  => round($importes['base'], 2),
+                'cuota' => round($importes['cuota'], 2),
+            ];
+        }
+
+        ksort($porImpuesto);
+
+        return ['ticket' => $ticket, 'porImpuesto' => $porImpuesto];
     }
 
     // ------------------------------------------------------------------

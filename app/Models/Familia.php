@@ -18,6 +18,17 @@ class Familia extends Model
         ];
     }
 
+    /**
+     * Direccion de la imagen de la familia, si tiene.
+     *
+     * Devuelve null cuando no hay ninguna, que es lo que el TPV usa
+     * para seguir pintandola como pastilla de siempre.
+     */
+    public function urlImagen(): ?string
+    {
+        return filled($this->imagen) ? tenant_asset($this->imagen) : null;
+    }
+
     public function articulos()
     {
         return $this->hasMany(Articulo::class)->orderBy('orden')->orderBy('nombre');

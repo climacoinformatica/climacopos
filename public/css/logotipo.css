@@ -2,34 +2,58 @@
    LOGOTIPO DEL SALON
    ============================================================ */
 
+/* ------------------------------------------------------------
+   DOS CASOS DISTINTOS
+
+   El logotipo de CLIMACO POS es trazo BLANCO sobre transparente:
+   se lee solo sobre la cabecera oscura del panel y no necesita
+   nada detras.
+
+   Los que suben los salones suelen ser oscuros sobre fondo
+   transparente o blanco. Esos si necesitan un fondo claro, o
+   desaparecerian sobre la cabecera.
+
+   Por eso .marca-logo--propio lleva el fondo blanco y el nuestro
+   no. Antes la regla era una sola, con fondo blanco siempre, y
+   con el logotipo blanco actual quedaba invisible.
+   ------------------------------------------------------------ */
+
 /* ---------- En la cabecera del panel ---------- */
 .marca-logo {
     display: block;
-    height: 46px;
+    height: 62px;
     width: auto;
-    max-width: 260px;
+    max-width: 320px;
     object-fit: contain;
+}
 
-    /**
-     * FONDO CLARO DETRAS
-     *
-     * El logotipo de CLIMACO POS lleva texto azul marino, casi negro.
-     * Sobre la cabecera oscura del panel no se leeria.
-     *
-     * Un fondo claro redondeado lo resuelve para cualquier logotipo, sea
-     * claro u oscuro, sin obligar al salon a tener una version especial.
-     * Es lo que hacen las aplicaciones que aceptan logotipos de terceros.
-     */
+/* El del salon: fondo claro detras para que se lea */
+.marca-logo--propio {
     background: #fff;
     border-radius: 8px;
     padding: 4px 8px;
+    height: 54px;
+    max-width: 260px;
 }
 
 /* ---------- En el portal, que ya es claro ---------- */
+
+/*
+ * Aqui se invierte: el nuestro, al ser blanco, necesita el fondo
+ * oscuro; el del salon se ve solo.
+ */
 .portal .marca-logo {
+    background: #0f172a;
+    border-radius: 8px;
+    padding: 6px 10px;
+    height: 52px;
+    max-width: 280px;
+}
+
+.portal .marca-logo--propio {
     background: transparent;
     padding: 0;
-    height: 44px;
+    height: 48px;
     max-width: 240px;
 }
 
@@ -47,12 +71,22 @@
 /* El damero de fondo deja ver si el PNG tiene transparencia de verdad */
 
 .logo-actual__imagen {
-    max-height: 80px;
+    max-height: 96px;
     max-width: 100%;
     object-fit: contain;
+}
+
+/* Igual que arriba: solo el del salon lleva fondo claro */
+.logo-actual__imagen--propio {
     background: #fff;
     border-radius: 8px;
     padding: 8px 12px;
 }
 
 .logo-actual__pie { margin-top: 1rem; }
+
+/* ---------- Pantallas pequenas ---------- */
+@media (max-width: 640px) {
+    .marca-logo { height: 44px; max-width: 200px; }
+    .marca-logo--propio { height: 40px; }
+}

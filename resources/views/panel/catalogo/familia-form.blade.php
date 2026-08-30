@@ -10,8 +10,17 @@
 </div>
 
 <form method="POST"
+      {{--
+          OJO CON EL NOMBRE DE LA RUTA
+
+          Al editar hay que usar `familias.guardar.editar`, que es la que
+          lleva {familia} en la URL. Con `familias.guardar` a secas, el
+          id se colaba como cadena de consulta (?familia=5), la peticion
+          entraba por la ruta de CREAR y cada edicion generaba una
+          familia duplicada en vez de actualizar la existente.
+      --}}
       action="{{ $familia->exists
-                 ? route('panel.catalogo.familias.guardar', $familia)
+                 ? route('panel.catalogo.familias.guardar.editar', $familia)
                  : route('panel.catalogo.familias.guardar') }}"
       enctype="multipart/form-data">
     @csrf
@@ -66,9 +75,26 @@
 
         <div class="campo">
             <label for="imagen">Imagen</label>
+
+            {{--
+                Se enseña la que hay, no solo un aviso de texto.
+
+                Ver la miniatura evita el error tipico de subir otra
+                creyendo que no habia ninguna, y de paso confirma que la
+                anterior se guardo bien.
+            --}}
+            <div class="vista-imagen">
+                @if ($url = $familia->urlImagen())
+                    <img src="{{ $url }}" alt="Imagen de {{ $familia->nombre }}">
+                @else
+                    <span class="vista-imagen__vacio">Sin imagen</span>
+                @endif
+            </div>
+
             <input type="file" id="imagen" name="imagen" accept="image/*">
+
             @if ($familia->imagen)
-                <p class="campo__pista">Ya hay una imagen cargada. Sube otra para reemplazarla.</p>
+                <p class="campo__pista">Sube otra para reemplazarla.</p>
             @endif
         </div>
 

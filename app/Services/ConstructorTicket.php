@@ -244,6 +244,98 @@ class ConstructorTicket
     }
 
     /**
+     * Informe X: lectura de la jornada en curso.
+     *
+     * Mismo arqueo que el cierre pero SIN cerrar: no crea registro, no
+     * marca tickets y se puede sacar las veces que haga falta. Sirve
+     * para cuadrar a media tarde o al cambiar de turno.
+     *
+     * Recibe el array de GestorCierre::informeX().
+     */
+    public function informeX(array $datos, ?string $usuario = null): string
+    {
+        $d = $this->diseno;
+        $esc = new EscPos($d->columnas);
+
+        $esc->inicializar()->centrar()->negrita(true)->tamano(2, 2)
+            ->linea('INFORME X')
+            ->tamano(1, 1)
+            ->linea('LECTURA DE JORNADA')
+            ->negrita(false)
+            ->linea(tenant('nombre_comercial'))
+            ->saltos(1)->izquierda();
+
+        $esc->fila('Desde', $datos['desde']->format('d/m/Y H:i'));
+        $esc->fila('Emitido', ($datos['momento'] ?? now())->format('d/m/Y H:i'));
+
+        if ($usuario) {
+            $esc->fila('Usuario', $usuario);
+        }
+
+        $esc->separador();
+
+        $esc->fila('Tickets', (string) $datos['num_tickets']);
+        $esc->fila('Base', $this->euros((float) $datos['total_base']));
+        $esc->fila('Impuesto', $this->euros((float) $datos['total_impuesto']));
+        $esc->negrita(true)
+            ->fila('VENTAS', $this->euros((float) $datos['total_ventas']))
+            ->negrita(false);
+        $esc->fila('Ticket medio', $this->euros((float) $datos['ticket_medio']));
+
+        if (! empty($datos['por_medio'])) {
+            $esc->separador()->negrita(true)->linea('POR MEDIO DE PAGO')->negrita(false);
+
+            foreach ($datos['por_medio'] as $medio => $importe) {
+                $esc->fila(ucfirst(strtolower($medio)), $this->euros((float) $importe));
+            }
+        }
+
+        $esc->separador()->negrita(true)->linea('ARQUEO DE EFECTIVO')->negrita(false);
+        $esc->fila('Fondo inicial', $this->euros((float) $datos['efectivo_inicial']));
+        $esc->fila('Ventas efectivo', $this->euros((float) ($datos['por_medio']['EFECTIVO'] ?? 0)));
+
+        if ((float) $datos['entradas'] > 0) {
+            $esc->fila('Entradas', $this->euros((float) $datos['entradas']));
+        }
+
+        if ((float) $datos['salidas'] > 0) {
+            $esc->fila('Salidas', '-' . $this->euros((float) $datos['salidas']));
+        }
+
+        $esc->negrita(true)
+            ->fila('DEBE HABER', $this->euros((float) $datos['efectivo_teorico']))
+            ->negrita(false);
+
+        if (! empty($datos['por_profesional'])) {
+            $esc->separador()->negrita(true)->linea('POR PROFESIONAL')->negrita(false);
+
+            foreach ($datos['por_profesional'] as $nombre => $importe) {
+                $esc->fila($nombre, $this->euros((float) $importe));
+            }
+        }
+
+        /**
+         * El aviso no es decorativo.
+         *
+         * En papel, un X y un Z se parecen demasiado. Si alguien archiva
+         * un X creyendo que cerro, al dia siguiente el cierre real sale
+         * con el doble de ventas y nadie entiende por que.
+         */
+        $esc->separador()->centrar()
+            ->negrita(true)->invertido(true)
+            ->linea(' NO CIERRA LA JORNADA ')
+            ->invertido(false)->negrita(false)
+            ->linea('Documento informativo')
+            ->linea('sin valor fiscal');
+
+        if (($datos['formacion'] ?? 0) > 0) {
+            $esc->saltos(1)->linea($datos['formacion'] . ' doc. de formacion aparte');
+        }
+
+        return $esc->saltos($d->lineas_finales)->cortar()->salida();
+    }
+
+    /**
      * Parte de trabajo por profesional.
      *
      * Va en papel APARTE del cierre a proposito: el cierre lo maneja

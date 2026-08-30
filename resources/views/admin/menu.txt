@@ -1,0 +1,4 @@
+En resources/views/admin/base.blade.php, junto a los demas enlaces del
+menu (Empresas, Pagos, Correo), anade:
+
+    <a href="{{ route('admin.planes') }}" @class(['activo' => request()->routeIs('admin.planes*')])>Planes</a>

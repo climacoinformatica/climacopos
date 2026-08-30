@@ -1,81 +1,309 @@
 /* ============================================================
-   BARRA DE CAJA EN EL TPV
+   ACCIONES DE CAJA EN EL TPV
+   Cajon, informe X y cierre de jornada.
    ============================================================ */
 
-.tpv-caja {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: .4rem;
-    margin-top: .6rem;
-    padding-top: .6rem;
-    border-top: 1px solid var(--borde);
+/* ------------------------------------------------------------
+   Barra fija abajo a la derecha.
+
+   Fija a la PANTALLA, no al panel del ticket. Dentro del aside
+   quedaba recortada, porque .tpv__ticket es flex con
+   max-height: calc(100vh - 110px) y la barra competia por el
+   alto con las lineas del ticket.
+
+   z-index 60: por debajo de .modal-cobro (70) y de .tpv-nota
+   (90), asi que el cobro y los avisos la tapan, que es lo que
+   debe pasar.
+   ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   La columna derecha: ticket arriba, acciones debajo.
+
+   .tpv es una rejilla de dos columnas, asi que el ticket y los
+   botones se envuelven en este contenedor para compartir la
+   misma celda. Si fueran hermanos directos de .tpv, la barra
+   caeria en una fila nueva por debajo del catalogo.
+   ------------------------------------------------------------ */
+.tpv__lateral {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+
+    /* El sticky del ticket se mueve aqui, al contenedor */
+    position: sticky;
+    top: 80px;
 }
 
-/* Con un solo boton, que no ocupe un tercio */
-.tpv-caja:has(> :only-child) { grid-template-columns: 1fr; }
+/* Ya lo posiciona .tpv__lateral */
+.tpv__ticket { position: static; top: auto; }
+
+.tpv-caja {
+    display: flex;
+    gap: .5rem;
+
+    /* Sin caja alrededor: los botones van sueltos */
+    background: none;
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+}
 
 .tpv-caja__boton {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: .2rem;
+    gap: .35rem;
 
-    width: 100%;
-    min-height: 52px;
-    padding: .4rem;
+    /* Se reparten el ancho del panel, a partes iguales */
+    flex: 1;
+    min-width: 0;
+    min-height: 5.6rem;
+    padding: .6rem .3rem;
 
-    background: var(--panel2);
+    background: var(--panel);
     border: 1px solid var(--borde);
-    border-radius: 9px;
+    border-radius: 12px;
 
     color: var(--suave);
-    font-size: .72rem;
     font-family: inherit;
-    text-decoration: none;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.15;
     text-align: center;
 
     cursor: pointer;
-    transition: .12s;
+    transition: transform .1s, filter .1s;
 }
-.tpv-caja__boton:hover {
-    border-color: var(--marca);
+
+.tpv-caja__boton:hover { color: var(--texto); border-color: var(--marca); }
+.tpv-caja__boton:active { transform: scale(.94); }
+.tpv-caja__boton:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Trazo blanco sobre transparente: se ven sobre el panel oscuro */
+.tpv-caja__boton img {
+    width: 2.4rem;
+    height: 2.4rem;
+    object-fit: contain;
+    opacity: .85;
+    pointer-events: none;
+}
+
+.tpv-caja__boton:hover img { opacity: 1; }
+
+.tpv-caja__aviso {
+    margin: 0;
+    padding: .6rem .8rem;
+
+    background: var(--panel);
+    border: 1px solid var(--ok);
+    border-radius: 10px;
+
+    color: var(--texto);
+    font-size: .82rem;
+}
+
+.tpv-caja__aviso--error { border-color: var(--error); color: #fca5a5; }
+
+/*
+ * En pantalla estrecha .tpv pasa a una sola columna y el ticket
+ * deja de ser sticky: el lateral tiene que hacer lo mismo.
+ */
+@media (max-width: 1024px) {
+    .tpv__lateral { position: static; }
+}
+
+/* ------------------------------------------------------------
+   Cuerpo de los informes en pantalla
+   ------------------------------------------------------------ */
+.informe-caja {
+    margin: .8rem 0 1rem;
+    max-height: 46vh;
+    overflow-y: auto;
+}
+
+.informe-caja__cargando { text-align: center; color: var(--suave); }
+
+.informe-caja__bloque + .informe-caja__bloque {
+    margin-top: .9rem;
+    padding-top: .7rem;
+    border-top: 1px solid var(--borde);
+}
+
+.informe-caja__bloque h4 {
+    margin: 0 0 .4rem;
+    color: var(--suave);
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.informe-caja__fila {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .18rem 0;
+    font-size: .86rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.informe-caja__fila--fuerte {
+    font-size: 1.05rem;
+    font-weight: 700;
     color: var(--texto);
 }
-.tpv-caja__boton:active { transform: scale(.97); }
 
-.tpv-caja__icono { font-size: 1.1rem; line-height: 1; }
-
-/* Los formularios no deben romper la rejilla */
-.tpv-caja form { display: contents; }
-
-/* ============================================================
-   APERTURA DE JORNADA
-   ============================================================ */
-
-.apertura__texto {
+.informe-caja__nota {
+    margin-top: .9rem;
+    padding: .5rem .7rem;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
     color: var(--suave);
-    font-size: .92rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    font-size: .8rem;
 }
 
-.apertura__importe {
-    font-size: 2rem !important;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    padding: .7rem !important;
-}
-
-.apertura__pista {
+.informe-caja__pie {
+    margin: .6rem 0 0;
     color: var(--suave);
     font-size: .78rem;
-    line-height: 1.5;
-    margin-top: 1.25rem;
+}
+
+.informe-caja__etiqueta {
+    display: block;
+    margin: .8rem 0 .3rem;
+    color: var(--suave);
+    font-size: .78rem;
+}
+
+.informe-caja__importe,
+.informe-caja__texto {
+    width: 100%;
+    padding: .8rem;
+    background: var(--panel2);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    color: var(--texto);
+    font-family: inherit;
+}
+
+.informe-caja__importe {
+    font-size: 1.4rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.informe-caja__texto { font-size: .9rem; }
+
+/* El descuadre se ve ANTES de confirmar, no despues */
+.informe-caja__descuadre {
+    margin: .6rem 0 0;
+    padding: .5rem .7rem;
+    background: rgba(16, 185, 129, .12);
+    border-radius: 8px;
+    color: var(--ok);
+    font-size: .88rem;
+    font-weight: 600;
     text-align: center;
 }
 
-@media (max-width: 560px) {
-    .tpv-caja { grid-template-columns: repeat(3, 1fr); }
-    .tpv-caja__boton { min-height: 46px; font-size: .68rem; }
+.informe-caja__descuadre--mal {
+    background: rgba(239, 68, 68, .15);
+    color: #fca5a5;
+}
+
+/* ============================================================
+   FAMILIAS CON IMAGEN EN EL TPV
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Solo la familia que tiene imagen se convierte en tarjeta.
+   Las demas siguen siendo la pastilla de tpv.css, sin tocar.
+
+   Por eso las reglas van aqui y no en tpv.css: son un anadido,
+   y asi el fichero original queda como estaba.
+   ------------------------------------------------------------ */
+
+/* Las pastillas se centran verticalmente junto a las tarjetas */
+.tpv__familias { align-items: center; }
+
+.tpv__familia--foto {
+    /* Deja de ser pastilla */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    width: 104px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color) 45%, transparent);
+    background: color-mix(in srgb, var(--color) 22%, var(--panel2));
+    overflow: hidden;
+    transition: transform .1s, filter .1s;
+}
+
+.tpv__familia--foto:hover { filter: brightness(1.2); }
+.tpv__familia--foto:active { transform: scale(.95); }
+
+.tpv__familia-foto {
+    display: block;
+    width: 100%;
+    height: 62px;
+
+    /*
+     * cover: la imagen rellena el hueco entero, recortando lo que
+     * sobra. En un boton de 104 px, contain dejaba franjas vacias
+     * arriba y abajo y quedaba mal.
+     *
+     * El recorte se hace desde el centro, que es donde suele estar
+     * el motivo de la foto.
+     */
+    object-fit: cover;
+    object-position: center;
+}
+
+.tpv__familia--foto .tpv__familia-nombre {
+    display: block;
+    padding: .35rem .3rem;
+    font-size: .74rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+
+    /* Nombres largos: dos lineas y elipsis, sin descuadrar la fila */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* La activa se marca con el color de la familia, como las pastillas */
+.tpv__familia--foto.tpv__familia--activa {
+    border-color: var(--color, var(--marca));
+    box-shadow: 0 0 0 2px var(--color, var(--marca));
+    color: var(--texto);
+}
+
+@media (max-width: 640px) {
+    .tpv__familia--foto { width: 88px; }
+    .tpv__familia-foto { height: 52px; }
+}
+
+
+/* ============================================================
+   FOTOS DE ARTICULO: TAMBIEN ENTERAS
+   ============================================================ */
+
+/*
+ * Se dejan como las define tpv.css: cover, de fondo y al 35% de
+ * opacidad. Rellenan la tarjeta entera.
+ *
+ * Se probo con contain para verlas completas, pero en tarjetas
+ * cuadradas dejaba franjas vacias y el conjunto perdia.
+ *
+ * object-position centra el recorte, que es donde suele estar el
+ * motivo de la foto.
+ */
+.articulo__foto {
+    object-position: center;
 }

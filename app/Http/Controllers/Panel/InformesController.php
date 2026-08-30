@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Usuario;
 use App\Services\GeneradorInformes;
 use App\Support\Permisos;
 use App\Support\SesionSalon;
@@ -41,19 +42,39 @@ class InformesController extends Controller
         $soloPropios = ! $usuario->tienePermiso(Permisos::INFORMES_VER)
                        && $usuario->tienePermiso(Permisos::INFORMES_VER_PROPIOS);
 
+        /**
+         * Profesional concreto, si se ha elegido uno.
+         *
+         * A quien solo ve lo suyo se le impone su propio id: asi el
+         * filtro no le sirve para asomarse a lo de un companero.
+         */
+        $profesionalId = $soloPropios
+            ? $usuario->id
+            : ($peticion->integer('usuario_id') ?: null);
+
         return view('panel.informes.index', [
-            'informe'     => $informe,
-            'informes'    => self::INFORMES,
-            'desde'       => $desde,
-            'hasta'       => $hasta,
-            'rango'       => $rango,
-            'generador'   => $generador,
-            'datos'       => $this->datos($generador, $informe, $soloPropios, $usuario),
-            'soloPropios' => $soloPropios,
+            'informe'       => $informe,
+            'informes'      => self::INFORMES,
+            'desde'         => $desde,
+            'hasta'         => $hasta,
+            'rango'         => $rango,
+            'generador'     => $generador,
+            'datos'         => $this->datos($generador, $informe, $soloPropios, $usuario, $profesionalId),
+            'soloPropios'   => $soloPropios,
+            'profesionalId' => $profesionalId,
+            'profesionales' => $soloPropios ? collect() : Usuario::activos()
+                                  ->where('es_profesional', true)
+                                  ->orderBy('nombre')->get(['id', 'nombre']),
         ]);
     }
 
-    protected function datos(GeneradorInformes $g, string $informe, bool $soloPropios, $usuario): array
+    protected function datos(
+        GeneradorInformes $g,
+        string $informe,
+        bool $soloPropios,
+        $usuario,
+        ?int $profesionalId = null,
+    ): array
     {
         $datos = match ($informe) {
             'evolucion' => [
@@ -67,7 +88,7 @@ class InformesController extends Controller
                 'tipos'     => $g->serviciosVsProductos(),
             ],
             'personas' => [
-                'profesionales' => $g->porProfesional(),
+                'profesionales' => $g->porProfesional($profesionalId),
                 'medios'        => $g->porMedioPago(),
             ],
             'clientes' => [
@@ -125,7 +146,8 @@ class InformesController extends Controller
             'articulos'    => [['Artículo', 'Unidades', 'Total'],
                                array_map(fn ($a) => [$a['etiqueta'], $a['unidades'], $a['total']], $g->porArticulo(500))],
             'profesionales'=> [['Profesional', 'Tickets', 'Total', 'Comisión'],
-                               array_map(fn ($p) => [$p['etiqueta'], $p['tickets'], $p['total'], $p['comision']], $g->porProfesional())],
+                               array_map(fn ($p) => [$p['etiqueta'], $p['tickets'], $p['total'], $p['comision']],
+                                   $g->porProfesional($peticion->integer('usuario_id') ?: null))],
             'medios'       => [['Medio', 'Veces', 'Total'],
                                array_map(fn ($m) => [$m['etiqueta'], $m['veces'], $m['total']], $g->porMedioPago())],
             'inactivos'    => [['Cliente', 'Teléfono', 'Email', 'Última visita', 'Meses', 'Visitas'],

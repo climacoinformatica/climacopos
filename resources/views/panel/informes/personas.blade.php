@@ -1,9 +1,47 @@
 <div class="tarjeta">
     <div class="tarjeta__cabecera">
         <h2>Ventas y comisiones por profesional</h2>
-        <a href="{{ route('panel.informes.exportar', request()->query() + ['que' => 'profesionales']) }}"
-           class="boton boton--secundario boton--pequeno">Exportar CSV</a>
+
+        {{--
+            Las tres salidas llevan los MISMOS filtros que hay en
+            pantalla: request()->query() arrastra fechas y profesional,
+            asi que lo exportado es exactamente lo que se esta viendo.
+        --}}
+        <div class="acciones-fila">
+            <a href="{{ route('panel.informes.exportar', request()->query() + ['que' => 'profesionales']) }}"
+               class="boton boton--secundario boton--pequeno">CSV</a>
+
+            <a href="{{ route('panel.documentos.profesionales.pdf', request()->query()) }}"
+               class="boton boton--secundario boton--pequeno">PDF</a>
+
+            <button type="button" class="boton boton--secundario boton--pequeno"
+                    onclick="document.getElementById('modalProfesionales').hidden = false">
+                Correo
+            </button>
+        </div>
     </div>
+
+    {{-- Filtro por profesional. A quien solo ve lo suyo no se le ofrece --}}
+    @if (! ($soloPropios ?? false) && ($profesionales ?? collect())->isNotEmpty())
+        <form method="GET" class="filtros" style="margin-bottom:1rem">
+            <input type="hidden" name="informe" value="personas">
+            <input type="hidden" name="rango" value="{{ $rango }}">
+            <input type="hidden" name="desde" value="{{ $desde->toDateString() }}">
+            <input type="hidden" name="hasta" value="{{ $hasta->toDateString() }}">
+
+            <div class="campo">
+                <label for="usuarioInforme">Profesional</label>
+                <select name="usuario_id" id="usuarioInforme" onchange="this.form.submit()">
+                    <option value="">Todos</option>
+                    @foreach ($profesionales as $prof)
+                        <option value="{{ $prof->id }}" @selected(($profesionalId ?? null) === $prof->id)>
+                            {{ $prof->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </form>
+    @endif
 
     <p class="tarjeta__ayuda">
         Cada línea del ticket guarda quién realizó el servicio, así que las cifras
@@ -56,3 +94,45 @@
     </div>
     @include('panel.informes.partes.lista', ['datos' => $datos['medios'], 'unidad' => 'veces'])
 </div>
+
+{{-- ---------- Envío del informe por correo ---------- --}}
+<div class="modal" id="modalProfesionales" hidden>
+    <div class="modal__caja" style="max-width:440px">
+        <h2>Enviar informe</h2>
+
+        <form method="POST" action="{{ route('panel.documentos.profesionales.enviar') }}">
+            @csrf
+            <input type="hidden" name="desde" value="{{ $desde->toDateString() }}">
+            <input type="hidden" name="hasta" value="{{ $hasta->toDateString() }}">
+            <input type="hidden" name="usuario_id" value="{{ $profesionalId ?? '' }}">
+
+            <div class="campo">
+                <label for="emailProfesionales">Dirección de correo</label>
+                <input type="email" id="emailProfesionales" name="email" required>
+                <p class="campo__pista">
+                    Se manda el PDF con el mismo periodo y el mismo profesional
+                    que ves ahora.
+                </p>
+            </div>
+
+            <div class="modal__pie">
+                <button type="button" class="boton boton--secundario"
+                        onclick="document.getElementById('modalProfesionales').hidden = true">
+                    Cancelar
+                </button>
+                <button type="submit" class="boton">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@push('scripts')
+<link rel="stylesheet" href="{{ asset('css/catalogo.css') }}?v=36">
+<script>
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        document.getElementById('modalProfesionales').hidden = true;
+    }
+});
+</script>
+@endpush

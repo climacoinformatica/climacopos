@@ -88,6 +88,7 @@
                         <th>Número</th><th>Fecha</th><th>Cliente</th>
                         <th class="num">Base</th><th class="num">Impuesto</th>
                         <th class="num">Total</th>
+                        <th class="num">Documento</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,6 +100,24 @@
                         <td class="num">{{ $euros($ticket->base) }}</td>
                         <td class="num">{{ $euros($ticket->impuesto) }}</td>
                         <td class="num"><strong>{{ $euros($ticket->total) }}</strong></td>
+
+                        {{--
+                            Acciones de la factura suelta.
+
+                            El correo se rellena con el del cliente si lo
+                            tiene: lo normal es buscar la factura de una
+                            clienta para mandarsela a ella.
+                        --}}
+                        <td class="num acciones-fila">
+                            <a class="boton boton--mini"
+                               href="{{ route('panel.documentos.factura.pdf', $ticket) }}">PDF</a>
+
+                            <button type="button" class="boton boton--mini boton--secundario"
+                                    onclick="enviarFactura(
+                                        '{{ route('panel.documentos.factura.enviar', $ticket) }}',
+                                        '{{ $ticket->referencia() }}',
+                                        '{{ $ticket->cliente?->email }}')">Correo</button>
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -135,15 +154,55 @@
     </div>
 </div>
 
+{{-- ---------- Envío de una factura suelta ---------- --}}
+<div class="modal" id="modalFactura" hidden>
+    <div class="modal__caja" style="max-width:440px">
+        <h2>Enviar factura</h2>
+        <p class="modal__ayuda" id="facturaRef"></p>
+
+        <form method="POST" id="formFactura">
+            @csrf
+
+            <div class="campo">
+                <label for="emailFactura">Dirección de correo</label>
+                <input type="email" id="emailFactura" name="email" required>
+                <p class="campo__pista">Se manda el PDF de esa factura adjunto.</p>
+            </div>
+
+            <div class="modal__pie">
+                <button type="button" class="boton boton--secundario"
+                        onclick="cerrarFactura()">Cancelar</button>
+                <button type="submit" class="boton">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <link rel="stylesheet" href="{{ asset('css/produccion.css') }}?v=34">
 <link rel="stylesheet" href="{{ asset('css/informes.css') }}?v=34">
 <link rel="stylesheet" href="{{ asset('css/claves.css') }}?v=34">
+<link rel="stylesheet" href="{{ asset('css/catalogo.css') }}?v=36">
 <script>
 function abrirEnvio()  { document.getElementById('modalEnvio').hidden = false; }
 function cerrarEnvio() { document.getElementById('modalEnvio').hidden = true; }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarEnvio(); });
+function enviarFactura(url, referencia, email) {
+    const form = document.getElementById('formFactura');
+
+    form.action = url;
+    document.getElementById('facturaRef').textContent = referencia;
+    document.getElementById('emailFactura').value = email || '';
+
+    document.getElementById('modalFactura').hidden = false;
+    document.getElementById('emailFactura').focus();
+}
+
+function cerrarFactura() { document.getElementById('modalFactura').hidden = true; }
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { cerrarEnvio(); cerrarFactura(); }
+});
 </script>
 @endpush
 

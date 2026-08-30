@@ -42,7 +42,14 @@ class AltaController extends Controller
         return view('web.alta.formulario', [
             'cuenta'   => $cuenta,
             'propuesta'=> $this->gestor->proponerSlug($cuenta->empresa ?: $cuenta->nombre),
-            'planes'   => Plan::where('activo', true)->orderBy('precio_mes')->get(),
+            /**
+             * Solo los planes del producto SaaS.
+             *
+             * Un salon de belleza no puede contratar el plan del
+             * programa de gimnasios: son productos distintos.
+             */
+            'planes'   => Plan::deLaNube()->where('activo', true)
+                              ->orderBy('precio_mes')->get(),
         ]);
     }
 

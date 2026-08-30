@@ -242,10 +242,18 @@ class GeneradorInformes
     // Personas
     // ------------------------------------------------------------------
 
-    public function porProfesional(): array
+    /**
+     * Ventas y comision por profesional.
+     *
+     * Con $usuarioId se limita a uno solo. El filtro va en el WHERE y no
+     * recortando el resultado despues, para que los totales del propio
+     * informe cuadren con lo que se ve.
+     */
+    public function porProfesional(?int $usuarioId = null): array
     {
         return $this->lineas()
             ->leftJoin('usuarios', 'ticket_lineas.usuario_id', '=', 'usuarios.id')
+            ->when($usuarioId, fn ($q) => $q->where('ticket_lineas.usuario_id', $usuarioId))
             ->selectRaw('COALESCE(usuarios.nombre, "Sin asignar") as etiqueta,
                          usuarios.color_agenda as color,
                          usuarios.comision_pct as comision,
@@ -290,6 +298,15 @@ class GeneradorInformes
         $conCliente = $this->tickets()->whereNotNull('cliente_id')->count();
         $total      = $this->tickets()->count();
 
+        /*
+         * La columna fecha_alta la crea la migracion
+         * 2026_08_30_120000_clientes_fecha_alta. Antes no existia y este
+         * recuento tumbaba el informe entero con un error 500.
+         *
+         * Se usa fecha_alta y no created_at porque al importar clientes
+         * de otro programa el alta real no es el dia en que se creo la
+         * fila. La migracion rellena los antiguos con created_at.
+         */
         $nuevos = Cliente::whereBetween('fecha_alta', [$this->desde, $this->hasta])->count();
 
         // Clientes que ya habían venido antes del periodo

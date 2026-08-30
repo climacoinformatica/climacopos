@@ -15,8 +15,9 @@
 </div>
 
 <form method="POST"
+      {{-- Al editar, la ruta con {articulo}: ver nota en familia-form --}}
       action="{{ $articulo->exists
-                 ? route('panel.catalogo.articulos.guardar', $articulo)
+                 ? route('panel.catalogo.articulos.guardar.editar', $articulo)
                  : route('panel.catalogo.articulos.guardar') }}"
       enctype="multipart/form-data">
     @csrf
@@ -358,6 +359,11 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+        @else
+            {{-- Sin fotos: se dice claramente, en vez de dejar el hueco vacio --}}
+            <div class="vista-imagen">
+                <span class="vista-imagen__vacio">Sin imagen</span>
             </div>
         @endif
 

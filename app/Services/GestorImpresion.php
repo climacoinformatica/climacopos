@@ -46,6 +46,26 @@ class GestorImpresion
     }
 
     /**
+     * Informe X: lectura de la jornada, sin cerrar nada.
+     *
+     * Se puede encolar tantas veces como haga falta: no crea registro ni
+     * marca ningun ticket.
+     */
+    public function informeX(array $datos, ?Terminal $terminal = null): ?ColaImpresion
+    {
+        $terminal ??= SesionSalon::terminal();
+
+        if (! $terminal) {
+            return null;
+        }
+
+        return $this->encolar($terminal, 'INFORME_X', 'TICKETS',
+            $this->constructor->informeX($datos, SesionSalon::usuario()?->nombre),
+            'Informe X del ' . now()->format('d/m/Y H:i'),
+        );
+    }
+
+    /**
      * Parte de trabajo por profesional.
      *
      * Va en papel APARTE del cierre: el cierre lo maneja quien cuadra el

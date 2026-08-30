@@ -85,23 +85,79 @@
     <div class="tarjeta">
         <h2>Tu plan: {{ $plan->nombre }}</h2>
 
+        @php
+            $usadas = \App\Support\LimitesPlan::facturasDelMes();
+            $tope   = (int) ($plan->max_facturas_mes ?? 0);
+            $pct    = $tope > 0 ? min(100, round(($usadas / $tope) * 100)) : 0;
+        @endphp
+
         <div class="arqueo">
             <div class="arqueo__dato arqueo__dato--destacado">
                 <span>Cuota</span>
                 <strong>
-                    {{ number_format($empresa->ciclo === 'ANUAL' ? $plan->precio_ano : $plan->precio_mes, 2, ',', '.') }} €
+                    @if ($plan->es_gratuito || $plan->precio_mes <= 0)
+                        Gratis
+                    @else
+                        {{ number_format($plan->precio_mes, 2, ',', '.') }} €
+                    @endif
                 </strong>
-                <span>{{ $empresa->ciclo === 'ANUAL' ? 'al año' : 'al mes' }}</span>
+                <span>{{ $plan->es_gratuito ? 'sin coste' : 'al mes' }}</span>
             </div>
+
+            <div class="arqueo__dato">
+                <span>Facturas este mes</span>
+                <strong>
+                    {{ $usadas }}@if ($tope > 0) <small style="font-weight:400">de {{ $tope }}</small>@endif
+                </strong>
+                <span>{{ $tope > 0 ? 'límite del plan' : 'sin límite' }}</span>
+            </div>
+
             <div class="arqueo__dato">
                 <span>Profesionales</span>
-                <strong>{{ $plan->max_profesionales }}</strong>
+                <strong>
+                    {{ $plan->max_profesionales > 0 && $plan->max_profesionales < 100
+                       ? $plan->max_profesionales : 'Sin límite' }}
+                </strong>
             </div>
+
             <div class="arqueo__dato">
-                <span>Terminales</span>
-                <strong>{{ $plan->max_terminales }}</strong>
+                <span>Soporte</span>
+                <strong style="font-size:1rem">{{ $plan->soporteLegible() }}</strong>
             </div>
         </div>
+
+        {{--
+            Barra de consumo, solo cuando hay limite.
+
+            En el plan gratuito importa mucho: el salon tiene que ver que
+            se acerca al tope ANTES de que el panel se le bloquee un lunes
+            por la mañana.
+        --}}
+        @if ($tope > 0)
+            <div class="consumo">
+                <div class="consumo__barra">
+                    <div @class([
+                            'consumo__relleno',
+                            'consumo__relleno--aviso' => $pct >= 80 && $pct < 95,
+                            'consumo__relleno--grave' => $pct >= 95,
+                         ])
+                         style="width: {{ $pct }}%"></div>
+                </div>
+
+                <p class="consumo__texto">
+                    @if ($usadas >= $tope)
+                        Has llegado al límite de este mes. <strong>Puedes seguir
+                        cobrando con normalidad</strong>, pero el resto del programa
+                        está limitado hasta que amplíes el plan o empiece el mes
+                        que viene.
+                    @elseif ($pct >= 80)
+                        Te quedan <strong>{{ $tope - $usadas }} facturas</strong> este mes.
+                    @else
+                        Te quedan {{ $tope - $usadas }} facturas este mes.
+                    @endif
+                </p>
+            </div>
+        @endif
 
         @if ($empresa->stripe_customer_id)
             <form method="POST" action="{{ route('panel.suscripcion.portal') }}" style="margin-top:1.25rem">
@@ -130,46 +186,71 @@
                     <h3>{{ $opcion->nombre }}</h3>
 
                     <p class="plan__precio">
-                        {{ number_format($opcion->precio_mes, 2, ',', '.') }} €
-                        <small>/mes</small>
+                        @if ($opcion->es_gratuito || $opcion->precio_mes <= 0)
+                            Gratis
+                        @else
+                            {{ number_format($opcion->precio_mes, 2, ',', '.') }} €
+                            <small>/mes</small>
+                        @endif
                     </p>
 
-                    @if ($opcion->precio_ano > 0)
-                        <p class="plan__anual">
-                            o {{ number_format($opcion->precio_ano, 2, ',', '.') }} € al año
-                            @php $ahorro = ($opcion->precio_mes * 12) - $opcion->precio_ano; @endphp
-                            @if ($ahorro > 0)
-                                <em>(ahorras {{ number_format($ahorro, 2, ',', '.') }} €)</em>
-                            @endif
-                        </p>
-                    @endif
+                    {{--
+                        Los limites SOLO se enseñan cuando los hay.
 
+                        En los planes de pago va todo sin limite, asi que
+                        listar «999 profesionales» no dice nada. En el
+                        gratuito si importan: son la razon de que exista un
+                        plan de pago.
+                    --}}
                     <ul class="plan__lista">
-                        <li>{{ $opcion->max_profesionales }} profesional(es)</li>
-                        <li>{{ $opcion->max_terminales }} terminal(es)</li>
-                        <li>{{ $opcion->reservas_online ? 'Reservas online' : 'Sin reservas online' }}</li>
-                        <li>{{ $opcion->pagos_online ? 'Cobro de fianzas' : 'Sin cobro online' }}</li>
-                        <li>{{ $opcion->verifactu ? 'VERI*FACTU' : 'Sin VERI*FACTU' }}</li>
-                        @if ($opcion->dominio_propio)
-                            <li>Dominio propio</li>
+                        @if ($opcion->max_facturas_mes > 0)
+                            <li class="plan__limite">
+                                Hasta <strong>{{ $opcion->max_facturas_mes }} facturas</strong> al mes
+                            </li>
+                        @else
+                            <li><strong>Facturas sin límite</strong></li>
                         @endif
+
+                        @if ($opcion->max_profesionales > 0 && $opcion->max_profesionales < 100)
+                            <li class="plan__limite">
+                                {{ $opcion->max_profesionales }}
+                                {{ $opcion->max_profesionales === 1 ? 'profesional' : 'profesionales' }}
+                            </li>
+                        @else
+                            <li>Profesionales sin límite</li>
+                        @endif
+
+                        <li>Todas las funciones del programa</li>
+                        <li>Reservas online y cobro con tarjeta</li>
+                        <li>VERI*FACTU incluido</li>
                     </ul>
+
+                    <p class="plan__soporte plan__soporte--{{ strtolower($opcion->soporte ?? 'ninguno') }}">
+                        {{ $opcion->soporteLegible() }}
+                    </p>
 
                     <form method="POST" action="{{ route('panel.suscripcion.contratar') }}">
                         @csrf
                         <input type="hidden" name="plan_id" value="{{ $opcion->id }}">
 
-                        <div class="campo">
-                            <select name="ciclo">
-                                <option value="MENSUAL">Pago mensual</option>
-                                @if ($opcion->precio_ano > 0)
-                                    <option value="ANUAL">Pago anual</option>
-                                @endif
-                            </select>
-                        </div>
+                        {{--
+                            Solo pago mensual.
+
+                            El ciclo viaja oculto: el controlador lo sigue
+                            esperando, pero no hay nada que elegir. Un
+                            desplegable con una sola opcion es una decision
+                            que no existe.
+                        --}}
+                        <input type="hidden" name="ciclo" value="MENSUAL">
 
                         <button type="submit" class="boton boton--ancho">
-                            {{ $plan?->id === $opcion->id ? 'Renovar' : 'Contratar' }}
+                            @if ($plan?->id === $opcion->id)
+                                Tu plan actual
+                            @elseif ($opcion->es_gratuito || $opcion->precio_mes <= 0)
+                                Empezar gratis
+                            @else
+                                Contratar
+                            @endif
                         </button>
                     </form>
                 </div>
@@ -217,6 +298,62 @@
 </div>
 
 @push('scripts')
+<style>
+/* ---------- Barra de consumo ---------- */
+.consumo { margin-top: 1.5rem; }
+
+.consumo__barra {
+    height: 8px;
+    background: var(--panel2);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.consumo__relleno {
+    height: 100%;
+    background: var(--ok, #10b981);
+    border-radius: 999px;
+    transition: width .3s;
+}
+.consumo__relleno--aviso { background: #f59e0b; }
+.consumo__relleno--grave { background: #ef4444; }
+
+.consumo__texto {
+    margin-top: .6rem;
+    font-size: .85rem;
+    color: var(--suave);
+    line-height: 1.55;
+}
+
+/* ---------- Soporte del plan ---------- */
+.plan__soporte {
+    margin: 1rem 0;
+    padding: .7rem .85rem;
+    border-radius: 8px;
+    font-size: .86rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.45;
+}
+.plan__soporte--ninguno {
+    background: var(--panel2);
+    color: var(--suave);
+    font-weight: 500;
+}
+.plan__soporte--email {
+    background: rgba(99,102,241,.12);
+    border: 1px solid rgba(99,102,241,.3);
+    color: #a5b4fc;
+}
+.plan__soporte--completo {
+    background: rgba(16,185,129,.12);
+    border: 1px solid rgba(16,185,129,.3);
+    color: #6ee7b7;
+}
+
+/* Los limites del gratuito, destacados: son la razon de pagar */
+.plan__limite { color: #fcd34d; }
+</style>
 <link rel="stylesheet" href="{{ asset('css/planes.css') }}?v=9">
 @endpush
 

@@ -16,6 +16,10 @@
         <p class="aviso aviso--ok">{{ session('exito') }}</p>
     @endif
 
+    @if (session('error'))
+        <p class="aviso aviso--error">{{ session('error') }}</p>
+    @endif
+
     @if ($usuarios->isEmpty())
         <p class="aviso aviso--error">
             No hay usuarios activos. Crea el primero con:<br>
@@ -42,17 +46,49 @@
                     @if ($usuario->en_formacion)
                         <span class="tarjeta__etiqueta">FORMACIÓN</span>
                     @endif
+
+                    @if (($estados[$usuario->id] ?? 'FUERA') !== 'FUERA')
+                        <span class="tarjeta__fichaje">EN JORNADA</span>
+                    @endif
                 </button>
+
+                {{--
+                    Solo a quien esta dentro se le ofrece salir. El boton
+                    va fuera de la tarjeta porque la tarjeta ya es un
+                    boton, y anidarlos no es HTML valido.
+                --}}
+                @if (($estados[$usuario->id] ?? 'FUERA') !== 'FUERA')
+                    <button type="button" class="salida-fichaje"
+                            data-salida="{{ $usuario->id }}"
+                            data-nombre="{{ $usuario->alias ?: $usuario->nombre }}">
+                        Marcar salida
+                    </button>
+                @endif
             </li>
         @endforeach
     </ul>
+
+    {{--
+        Pie de marca.
+
+        Se usa la constante y no la ruta escrita a mano: asi, cuando
+        cambie el logotipo de la aplicacion, esta pantalla lo coge sola.
+
+        Es el logotipo de CLIMACO POS, no el del salon: el del salon ya
+        sale arriba, en la cabecera.
+    --}}
+    <footer class="selector__pie">
+        <img src="{{ asset(App\Services\GestorLogotipo::POR_DEFECTO) }}"
+             alt="CLIMACO POS" class="selector__marca">
+        <p>La gestión profesional para tu negocio</p>
+    </footer>
 </div>
 
 <div class="modal" id="modalPin" hidden>
     <div class="modal__caja">
         <button type="button" class="modal__cerrar" id="cerrarPin">&times;</button>
         <h2 id="pinNombre"></h2>
-        <p class="modal__ayuda">Introduce tu PIN</p>
+        <p class="modal__ayuda" id="pinAyuda">Introduce tu PIN</p>
 
         <div class="puntos" id="puntos"></div>
 
@@ -70,10 +106,23 @@
             <button type="button" class="tecla tecla--ok" id="aceptarPin">&crarr;</button>
         </div>
 
+        {{--
+            Dos formularios, uno por accion.
+
+            El JS envia el que toque segun se haya pulsado la tarjeta
+            (entrar) o «Marcar salida». Asi cada uno conserva su propia
+            ruta y su validacion en el servidor.
+        --}}
         <form method="POST" action="{{ route('panel.selector.entrar') }}" id="formPin">
             @csrf
             <input type="hidden" name="usuario_id" id="campoUsuario">
             <input type="hidden" name="pin" id="campoPin">
+        </form>
+
+        <form method="POST" action="{{ route('panel.selector.salida') }}" id="formSalida">
+            @csrf
+            <input type="hidden" name="usuario_id" id="campoUsuarioSalida">
+            <input type="hidden" name="pin" id="campoPinSalida">
         </form>
     </div>
 </div>
@@ -85,11 +134,21 @@
     const form     = document.getElementById('formPin');
     const campoPin = document.getElementById('campoPin');
     const campoUsr = document.getElementById('campoUsuario');
+    const formSal  = document.getElementById('formSalida');
     const error    = document.getElementById('pinError');
     const LONGITUD_MAX = 8;
     const LONGITUD_MIN = 4;
 
     let pin = '';
+
+    /*
+     * ENTRAR o SALIDA.
+     *
+     * El mismo teclado sirve para las dos cosas; lo unico que cambia es
+     * a que formulario se manda el PIN. Se guarda aqui para no repetir
+     * el teclado dos veces en la pagina.
+     */
+    let modo = 'ENTRAR';
 
     function pintar() {
         puntos.innerHTML = '';
@@ -100,10 +159,15 @@
         }
     }
 
-    function abrir(id, nombre) {
-        pin = '';
+    function abrir(id, nombre, accion) {
+        pin  = '';
+        modo = accion || 'ENTRAR';
+
         campoUsr.value = id;
         document.getElementById('pinNombre').textContent = nombre;
+        document.getElementById('pinAyuda').textContent =
+            modo === 'SALIDA' ? 'Introduce tu PIN para fichar la salida' : 'Introduce tu PIN';
+
         error.hidden = true;
         modal.hidden = false;
         pintar();
@@ -120,13 +184,27 @@
             error.hidden = false;
             return;
         }
+        if (modo === 'SALIDA') {
+            document.getElementById('campoUsuarioSalida').value = campoUsr.value;
+            document.getElementById('campoPinSalida').value = pin;
+            formSal.submit();
+
+            return;
+        }
+
         campoPin.value = pin;
         form.submit();
     }
 
     document.querySelectorAll('.tarjeta').forEach(function (boton) {
         boton.addEventListener('click', function () {
-            abrir(this.dataset.usuario, this.dataset.nombre);
+            abrir(this.dataset.usuario, this.dataset.nombre, 'ENTRAR');
+        });
+    });
+
+    document.querySelectorAll('[data-salida]').forEach(function (boton) {
+        boton.addEventListener('click', function () {
+            abrir(this.dataset.salida, this.dataset.nombre, 'SALIDA');
         });
     });
 
@@ -165,7 +243,7 @@
         const ultimo = @json(old('usuario_id'));
         if (ultimo) {
             const boton = document.querySelector('[data-usuario="' + ultimo + '"]');
-            if (boton) abrir(ultimo, boton.dataset.nombre);
+            if (boton) abrir(ultimo, boton.dataset.nombre, 'ENTRAR');
         }
     @endif
 })();

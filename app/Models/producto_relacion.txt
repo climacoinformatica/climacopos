@@ -1,0 +1,7 @@
+Este metodo entra en app/Models/Producto.php:
+
+    /** Los planes de este producto. */
+    public function planes()
+    {
+        return $this->hasMany(Plan::class)->orderBy('orden');
+    }

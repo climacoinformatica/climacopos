@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AccesoController;
 use App\Http\Controllers\Admin\AjustesController;
 use App\Http\Controllers\Admin\CorreoController;
 use App\Http\Controllers\Admin\PanelController;
+use App\Http\Controllers\Admin\PlanesController;
 use App\Http\Controllers\Web\AltaController;
 use App\Http\Controllers\Web\AreaController;
 use App\Http\Controllers\Web\PaginaController;
@@ -114,6 +115,27 @@ Route::middleware('auth:cuenta')->prefix('mi-cuenta')->group(function () {
     Route::get('comprobar-direccion', [AltaController::class, 'comprobar'])->name('web.alta.comprobar');
 });
 
+// ---------------------------------------------------------------- Webhook
+
+/**
+ * Avisos de Stripe sobre las SUSCRIPCIONES de los salones.
+ *
+ * Stripe llama aqui cuando un salon paga su cuota, cuando falla el cobro
+ * o cuando cancela. Sin esto, Stripe cobraria pero el sistema no se
+ * enteraria: la suscripcion nunca se marcaria como activa.
+ *
+ * NO CONFUNDIR con el webhook de routes/tenant.php, que es para los
+ * cobros del salon a sus clientas.
+ *
+ * Va sin CSRF ni sesion: la peticion viene de los servidores de Stripe,
+ * no de un navegador. Lo que la autentica es la firma HMAC, que el
+ * controlador comprueba antes de tocar nada.
+ */
+Route::domain(config('tenancy.central_domains')[0] ?? 'climacopos.com')
+    ->post('webhook/billing', \App\Http\Controllers\Webhook\BillingWebhookController::class)
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->name('webhook.billing');
+
 // ---------------------------------------------------------------- Admin
 
 /**
@@ -140,6 +162,20 @@ Route::domain($dominioAdmin)->name('admin.')->group(function () {
         Route::get('correo', [CorreoController::class, 'index'])->name('correo');
         Route::post('correo', [CorreoController::class, 'guardar'])->name('correo.guardar');
         Route::post('correo/probar', [CorreoController::class, 'probar'])->name('correo.probar');
+
+        /**
+         * Planes de suscripcion.
+         *
+         * Hasta ahora solo se podian crear por base de datos, asi que en
+         * la practica no habia ninguno: el formulario de alta no ofrecia
+         * nada que contratar.
+         */
+        Route::get('planes', [PlanesController::class, 'index'])->name('planes');
+        Route::post('planes', [PlanesController::class, 'crear'])->name('planes.crear');
+        Route::post('planes/sincronizar', [PlanesController::class, 'sincronizar'])->name('planes.sincronizar');
+        Route::post('planes/{plan}', [PlanesController::class, 'guardar'])->name('planes.guardar');
+        Route::post('planes/{plan}/sincronizar', [PlanesController::class, 'sincronizar'])->name('planes.sincronizar.uno');
+        Route::delete('planes/{plan}', [PlanesController::class, 'borrar'])->name('planes.borrar');
 
         Route::get('ajustes/pagos', [AjustesController::class, 'pagos'])->name('ajustes.pagos');
         Route::post('ajustes/pagos', [AjustesController::class, 'guardarPagos'])->name('ajustes.pagos.guardar');

@@ -155,7 +155,19 @@ class GestorAltas
             );
         }
 
-        $plan ??= Plan::where('slug', 'prueba')->first() ?? Plan::orderBy('id')->first();
+        /**
+         * Plan por defecto del producto SaaS.
+         *
+         * Antes buscaba uno con slug «prueba» que nunca ha existido, y al
+         * no encontrarlo cogia el PRIMERO de la tabla: con planes por
+         * producto, eso podia asignar a un salon de belleza el plan del
+         * programa de gimnasios.
+         *
+         * Ahora coge el mas barato de los que corresponden, que es lo
+         * razonable para empezar.
+         */
+        $plan ??= Plan::deLaNube()->where('activo', true)
+                      ->orderBy('precio_mes')->first();
 
         $empresa = null;
 
