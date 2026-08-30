@@ -27,7 +27,6 @@ use App\Http\Controllers\Panel\SuscripcionController;
 use App\Http\Controllers\Panel\VerifactuController;
 use App\Http\Controllers\Panel\TerminalController;
 use App\Http\Controllers\Panel\TpvController;
-use App\Http\Controllers\Panel\TpvAccionesController;
 use App\Http\Controllers\Panel\PagosController;
 use App\Http\Controllers\Portal\PagoController;
 use App\Http\Controllers\Portal\ReservaPortalController;
@@ -155,28 +154,6 @@ Route::middleware([
                     Route::post('tpv/{ticket}/cliente', [TpvController::class, 'cliente'])->name('tpv.cliente');
                     Route::post('tpv/{ticket}/cobrar', [TpvController::class, 'cobrar'])->name('tpv.cobrar');
 		    Route::post('tpv/{ticket}/imprimir', [TpvController::class, 'imprimir'])->name('tpv.imprimir');
-                });
-
-                /*
-                 * ---- Acciones de caja desde el TPV
-                 *
-                 * Van fuera del grupo tpv.vender porque cada una tiene su
-                 * propio permiso. Las rutas son literales («cajon»,
-                 * «informe-x»), asi que no chocan con tpv/{ticket}/...
-                 */
-                Route::post('tpv/cajon', [TpvAccionesController::class, 'abrirCajon'])
-                    ->middleware('permiso:tpv.abrir_cajon')->name('tpv.cajon');
-
-                Route::middleware('permiso:tpv.informes_caja')->group(function () {
-                    Route::get('tpv/informe-x', [TpvAccionesController::class, 'verX'])
-                        ->name('tpv.informe-x');
-                    Route::post('tpv/informe-x', [TpvAccionesController::class, 'imprimirX'])
-                        ->name('tpv.informe-x.imprimir');
-
-                    Route::get('tpv/informe-z', [TpvAccionesController::class, 'verZ'])
-                        ->name('tpv.informe-z');
-                    Route::post('tpv/informe-z/{cierre}', [TpvAccionesController::class, 'imprimirZ'])
-                        ->name('tpv.informe-z.imprimir');
                 });
 
                 Route::post('tpv/{ticket}/anular', [TpvController::class, 'anular'])

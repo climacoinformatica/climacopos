@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{{ asset('css/logotipo.css') }}?v=25">
     <link rel="stylesheet" href="{{ asset('css/produccion.css') }}?v=25">
     <link rel="stylesheet" href="{{ asset('css/tpv.css') }}?v=25">
+    <link rel="stylesheet" href="{{ asset('css/tpv-caja.css') }}?v=26">
 </head>
 <body data-teclado-tactil="{{ optional(\App\Support\SesionSalon::terminal())->ajuste('teclado_tactil', 'auto') ?: 'auto' }}">
 
